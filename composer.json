@@ -1,0 +1,34 @@
+{
+	"name": "arturaskaukenas/dom",
+	"description": "PHP XML and HTML Parser",
+	"version": "1.0.0",
+	"type": "library",
+	"keywords": ["DOM","XML","HTML", "Object"],
+	"license": "Apache-2.0",
+	"authors": [
+		{
+			"name": "Artūras Kaukėnas",
+			"email": "arturas.kaukenas@outlook.com"
+		}
+	],
+	"require": {
+		"php": ">=7.3",
+		"ext-xml": "*"
+	},
+	"require-dev": {
+		"arturaskaukenas/simpletest": "1.0.0"
+	},
+    "suggest": {
+		"ext-tidy": "HTML support"
+	},
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"prefer-stable": true,
+	"scripts":{
+		"test": "php tests/all.php",
+		"generate-docs": "doxygen Doxyfile"
+	}
+}

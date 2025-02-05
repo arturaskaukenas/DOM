@@ -1,0 +1,18 @@
+version: '3'
+services:
+   test:
+    build:
+      context: .
+      target: base
+    command: bash -c "cd /var/target-lib && composer install && composer test"
+    volumes:
+      - ./composer.json:/var/target-lib/composer.json
+      - ./src:/var/target-lib/src
+      - ./tests:/var/target-lib/tests
+   generate-docs:
+    build:
+      context: .
+      target: generate-docs
+    command: bash -c "cd /var/target-lib && doxygen Doxyfile && bash ./scripts/convert_docs_to_md.sh"
+    volumes:
+      - ./:/var/target-lib/

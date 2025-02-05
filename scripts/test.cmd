@@ -1,0 +1,1 @@
+cd .. && docker compose run --build --rm test
