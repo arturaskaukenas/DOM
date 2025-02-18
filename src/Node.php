@@ -53,6 +53,7 @@ abstract class Node implements INode {
 	protected $dataParser = null;
 
 	protected $expected = array();
+	protected $expectedElements = array();
 
 	public $errorsExists = false;
 	public $errors = array();
@@ -86,7 +87,7 @@ abstract class Node implements INode {
 		$name = $expected->name;
 
 		$this->expected[$name] = $expected;
-		$this->{$name} = $value;
+		$this->expectedElements[$name] = $value;
 		
 		return $this;
 	}
@@ -183,14 +184,38 @@ abstract class Node implements INode {
 		}
 
 		if ($this->expected[$name]->type === NodeDataTypes::T_ARRAY) {
-			if ($this->{$name} === null) {
-				$this->{$name} = array();
+			if ($this->expectedElements[$name] === null) {
+				$this->expectedElements[$name] = array();
 			}
 
-			$this->{$name}[] = $value;
+			$this->expectedElements[$name][] = $value;
 		} else {
-				$this->{$name} = $value;
+				$this->expectedElements[$name] = $value;
 		}
+	}
+
+	public function __get(string $name) {
+		return $this->expectedElements[$name];
+	}
+
+	public function __set(string $name, $value) : void {
+		$this->expectedElements[$name] = $value;
+	}
+
+	public function __isset(string $name) : bool {
+		return $this->expectedElementExists($name);
+	}
+
+	public function expectedElementExists(string $name) : bool {
+		return \array_key_exists($name, $this->expectedElements);
+	}
+	
+	public function setExpectedElement(string $name, $value) : void {
+		if (\is_array($this->expectedElements[$name])) {
+			$this->expectedElements[$name][] = $value;
+		}
+
+		$this->expectedElements[$name] = $value;
 	}
 
 	private function cast($value, $type) {

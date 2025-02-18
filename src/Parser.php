@@ -254,25 +254,22 @@ abstract class Parser implements IParser {
 	
 	private function determinateAndCreateNode(INode $scope, string $name, array $attributes) : ?INode {
 		$result = $this->performExpectedObject($scope, $name, $attributes);
-		if ($result === null) {
-			return null;
-		}
 
-		if (\is_object($result)) {
+		if ($result instanceof INode) {
 			return $result;
 		}
 
 		return $this->createNode($scope, $name, $attributes);
 	}
 
-	private function performExpectedObject(INode $scope, string $name, array $attributes) {
+	private function performExpectedObject(INode $scope, string $name, array $attributes) : ?INode {
 		$expected = $scope->getExpected();
 		if (!\array_key_exists($name, $expected)) {
-			return false;
+			return null;
 		}
 
 		if (!$expected[$name]->usePrototype) {
-			return false;
+			return null;
 		}
 
 		if (\is_string($expected[$name]->prototypeName)) {
@@ -280,7 +277,7 @@ abstract class Parser implements IParser {
 		} else if ($expected[$name]->prototypeClass instanceof \ReflectionClass) {
 			$obj = $this->getExpectedObjectByClass($expected[$name]->prototypeClass);
 		} else {
-				return false;
+				return null;
 		}
 
 		$ignoreChildren = false;
@@ -295,16 +292,12 @@ abstract class Parser implements IParser {
 		$obj->setParentNode($scope);
 		$obj->setIgnoreChildrenIfNotExists($ignoreChildren);
 
-		if (!\property_exists($scope, $name)) {
+		if (!$scope->expectedElementExists($name)) {
 			throw new \Exception("Element '".$name."' not exists in Node class");
 		}
 
-		if (\is_array($scope->{$name})) {
-			$scope->{$name}[] = $obj;
-		} else {
-				$scope->{$name} = $obj;
-		}
-		
+		$scope->setExpectedElement($name, $obj);
+
 		if ($ignoreChildren) {
 			return $obj;
 		}
@@ -332,14 +325,14 @@ abstract class Parser implements IParser {
 		array $attributes
 	) : INode {
 		$className_f = null;
-		$className = $this->prepareClassName($this->currentElementsNameTrace);
+		$className = $this->prepareClassName($this->currentElementsNameTrace); //TO-DO: TEST
 		if ($this->isNodeRegistered($className)) {
 			$className_f = $className;
-		}
-
-		$className = $this->prepareClassNameString($name);
-		if ($this->isNodeRegistered($className)) {
-			$className_f = $className;
+		} else {
+				$className = $this->prepareClassNameString($name);  //TO-DO: TEST
+				if ($this->isNodeRegistered($className)) {
+					$className_f = $className;
+				}
 		}
 
 		if ($className_f !== null) {

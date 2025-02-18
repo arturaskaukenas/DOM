@@ -22,14 +22,10 @@ namespace ArturasKaukenas\DOM\HTML;
 use \ArturasKaukenas\DOM;
 
 final class Document extends Node {
-	public $HTML = null;
-	public $HEAD = null;
-	public $BODY = null;
-	public $TITLE = null;
 	public function __construct() {
 		$this->
-			setExpectedObject("html", new \ReflectionClass("\ArturasKaukenas\DOM\HTML\Document"), false)->//fix <html> tag
-			setExpectedObject("head", new \ReflectionClass("\ArturasKaukenas\DOM\HTML\HTMLHeadElement"), false)->
-			setExpectedObject("body", new \ReflectionClass("\ArturasKaukenas\DOM\HTML\HTMLElement"), false);
+			setExpectedObject("html", new \ReflectionClass(Document::class), false)->//fix <html> tag
+			setExpectedObject("head", new \ReflectionClass(HTMLHeadElement::class), false)->
+			setExpectedObject("body", new \ReflectionClass(HTMLElement::class), false);
 	}
 }

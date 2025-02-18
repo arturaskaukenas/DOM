@@ -70,7 +70,7 @@ trait NodeActions {
 		$NameChar = $NameStartChar."|-|\.|[0-9]|\x{B7}|[\x{0300}-\x{036F}]|[\x{203F}-\x{2040}]";
 		$Name = "(".$NameStartChar.")(".$NameChar.")*";
 
-		if (preg_match("/^".$Name."$/u", $name) !== 1) {
+		if (\preg_match("/^".$Name."$/u", $name) !== 1) {
 			throw new \Exception("Failed to execute 'setAttribute' on 'Node': '".$name."' is not a valid attribute name.");
 		}
 

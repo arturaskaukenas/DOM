@@ -319,6 +319,68 @@ public function setDataAsChildren(bool $value): void;
 
 ---
 
+##### `expectedElementExists`
+```php
+public function expectedElementExists(string $name) : bool;
+```
+- **Description:** Checks if the expected element exists.
+- **Parameters:**
+  - `string $name`
+- **Returns:**
+  - `bool`
+
+---
+
+##### `setExpectedElement`
+```php
+public function setExpectedElement(string $name, $value) : void;
+```
+- **Description:** Sets an expected element value. In case the element is an array, it will append the value.
+- **Parameters:**
+  - `string $name`
+  - `mixed $value`
+- **Returns:**
+  - `void`
+
+---
+
+##### `__get`
+```php
+public function __get(string $name) : mixed;
+```
+- **Description:** Gets the value of the expected element.
+- **Parameters:**
+  - `string $name`
+- **Returns:**
+  - `mixed`
+
+---
+
+##### `__set`
+```php
+public function __set(string $name, $value) : void;
+```
+- **Description:** Sets an expected element value.
+- **Parameters:**
+  - `string $name`
+  - `mixed $value`
+- **Returns:**
+  - `void`
+
+---
+
+##### `__isset`
+```php
+public function __isset(string $name) : bool;
+```
+- **Description:** Checks if the expected element exists.
+- **Parameters:**
+  - `string $name`
+- **Returns:**
+  - `bool`
+
+---
+
 ### INodeActions Interface
 `INodeActions` defines methods for managing attributes, navigating child nodes, and handling node content.
 

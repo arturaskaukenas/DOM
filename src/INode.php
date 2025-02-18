@@ -78,4 +78,46 @@ interface INode extends INodeBasic, INodeActions {
      * @return 	void
      */
 	public function setDataAsChildren(bool $value) : void;
+
+	/**
+     * Checks if the expected element exists.
+     *
+     * @param 	string		$name
+     * @return 	bool
+     */
+	public function expectedElementExists(string $name) : bool;
+
+	/**
+     * Sets an expected element value. In case the element is an array, it will append the value.
+     *
+     * @param 	string		$name
+     * @param 	mixed		$value
+     * @return 	void
+     */
+	public function setExpectedElement(string $name, $value) : void;
+
+	/**
+     * Gets the value of the expected element.
+     *
+     * @param 	string		$name
+     * @return 	mixed
+     */
+	public function __get(string $name);
+	
+	/**
+     * Sets an expected element value.
+     *
+     * @param 	string		$name
+     * @param 	mixed		$value
+     * @return 	void
+     */
+	public function __set(string $name, $value) : void;
+
+	/**
+     * Checks if the expected element exists.
+     *
+     * @param 	string		$name
+     * @return 	bool
+     */
+	public function __isset(string $name): bool;
 }

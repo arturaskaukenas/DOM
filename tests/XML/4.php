@@ -1,6 +1,6 @@
 #!/usr/bin/php -d display_errors=1
 <?php
-	require_once(__DIR__."/../load.php");
+	require_once(__DIR__.\DIRECTORY_SEPARATOR."..".\DIRECTORY_SEPARATOR."load.php");
 	$test_case = new \ArturasKaukenas\SimpleTest\TestCase(4, "INode children");
 
 	use \ArturasKaukenas\DOM\XML;

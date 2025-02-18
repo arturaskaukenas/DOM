@@ -1,9 +1,9 @@
 #!/usr/bin/php -d display_errors=1
 <?php
-	require_once(__DIR__."/../load.php");
+	require_once(__DIR__.\DIRECTORY_SEPARATOR."..".\DIRECTORY_SEPARATOR."load.php");
 	$test_case = new \ArturasKaukenas\SimpleTest\TestCase(2, "Huge XML, NODE_NAME, clean after parse.");
 
-	require_once(__DIR__."/src/book.php");
+	require_once(__DIR__.\DIRECTORY_SEPARATOR"src".\DIRECTORY_SEPARATOR."book.php");
 
 	use \ArturasKaukenas\DOM;
 
