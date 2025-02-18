@@ -1,7 +1,7 @@
 {
 	"name": "arturaskaukenas/dom",
 	"description": "PHP XML and HTML Parser",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"type": "library",
 	"keywords": ["DOM","XML","HTML", "Object"],
 	"license": "Apache-2.0",
