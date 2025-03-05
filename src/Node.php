@@ -23,90 +23,97 @@ namespace ArturasKaukenas\DOM;
  * Class Node
  * @package ArturasKaukenas\DOM
  *
- * @property-read 	?string					$name				The name of the node.
- * @property-read 	array<string, mixed>	$attributes			The attributes of the node.
- * @property	 	?string					$data				The data associated with the node.
- * @property-read 	int						$childElementCount	The number of child elements.
+ * @property-read 	?string					$nodeName			The name of the node.
  * @property-read 	?INode					$parentNode			The parent node.
- * @property 		bool					$cleanOnFinalize	Flag indicating whether to clean the node on finalize.
+ * @property-read 	int						$childElementsQty	The number of child elements.
  * @property-read 	bool					$dataAsChildren		Flag indicating whether to treat data as children.
  * @property-read 	bool					$ignoreChildren		Flag indicating whether to ignore children.
- * @property 		?callable				$dataParser			The callback function for parsing data.
- * @property-read 	bool					$errorsExists		Flag indicating whether errors exist.
- * @property-read 	array<string>			$errors				The array of errors.
- * @property-read 	?IParser				$parser				The parser instance associated with the node.
+ * @property 		bool					$cleanOnFinalize	Flag indicating whether to clean the node on finalize.
  */
 
 abstract class Node implements INode {
 	use NodeActions;
 
-	public $nodeName = null;
-	public $attributes = array();
-	public $data = null;
-	public $childElementCount = 0;
-	public $children = array();
-	public $parentNode = null;
-	public $dataAsChildren = true;
-	public $ignoreChildren = false;
-	public $cleanOnFinalize = false;
+	public ?string $nodeName = null;
+	public ?INode $parentNode = null;
+	public int $childElementsQty = 0;
+	public bool $dataAsChildren = true;
+	public bool $ignoreChildren = false;
+	public bool $cleanOnFinalize = false;
 
+	protected array $attributes = [];
+	protected ?string $data = null;
+	protected array $children = [];
 	protected $dataParser = null;
+	protected array $expects = [];
+	protected array $expectsElements = [];
+	protected array $expectsAttributes = [];
+	protected array $expectedValues = [];
 
-	protected $expected = array();
-	protected $expectedElements = array();
+	protected bool $errorsExists = false;
+	protected array $errors = [];
 
-	public $errorsExists = false;
-	public $errors = array();
-
-	protected $parser = null;
+	protected ?IParser $parser = null;
 
 	public function setParser(IParser $parser) : void {
 		$this->parser = $parser;
 	}
 
 	public function getExpected() : array {
-		if (!isset($this->expected)) {
-			return array();
-		}
-
-		return $this->expected;
+		return \array_merge($this->getExpectedElements(), $this->getExpectedAttributes());
 	}
 
-	/**
-     * Specifies the expected element of the node.
-     *
-     * @param Expected $expected	Definition of expected element.
-     * @return INode The node instance.
-     */
-	public function expects(Expected $expected) : INode {
-		$value = null;
-		if ($expected->type === NodeDataTypes::T_ARRAY) {
-			$value = array();
+	public function getExpectedElements() : array {
+		if (!isset($this->expectsElements)) {
+			return [];
 		}
-		
-		$name = $expected->name;
 
-		$this->expected[$name] = $expected;
-		$this->expectedElements[$name] = $value;
-		
+		return $this->expectsElements;
+	}
+
+	public function getExpectedAttributes() : array {
+		if (!isset($this->expectsAttributes)) {
+			return [];
+		}
+
+		return $this->expectsAttributes;
+	}
+
+	public function expects(Expected\IExpected $expected) : INode {
+		$value = null;
+		if ($expected->isArray()) {
+			$value = [];
+		}
+
+		$name = $expected->getName();
+
+		if (isset($this->expects[$name])) {
+			throw new \Exception("key '".$name."' already expected");
+		}
+
+		$this->expects[$name] = $expected;
+
+		if ($expected instanceof Expected\Element) {
+			$this->expectsElements[$name] = $this->expects[$name];
+		} else if ($expected instanceof Expected\Attribute) {
+				$this->expectsAttributes[$name] = $this->expects[$name];
+		} else {
+				unset($this->expects[$name]);
+				throw new \Exception("expected element should be Element or Attribute");
+		}
+
+		$this->expectedValues[$name] = $value;
+
 		return $this;
 	}
-	
-	/**
-     * Sets an expected node template for child element.
-     *
-     * @param 	string $name    					The name of the expected element.
-     * @param 	string|\ReflectionClass $object		The class name or \ReflectionClass instance representing the expected object.
-     * @param 	bool $isArray						Indicates whether the expected element is an array or single element.
-     * @return 	INode 								The node instance.
-     */
+
 	public function setExpectedObject(string $name, $object, bool $isArray = false) : INode {
 		$type = NodeDataTypes::T_PROTO;
 		if ($isArray) {
-			$type = NodeDataTypes::T_ARRAY;
+			$type = NodeDataTypes::T_ARRAY_OF_PROTO;
 		}
 
-		$expected = new Expected($name, $type);
+		$expected = new Expected\Element($name, $type);
 
 		if (\is_string($object)) {
 			$expected->prototypeOfClassName($object);
@@ -119,16 +126,8 @@ abstract class Node implements INode {
 		return $this->expects($expected);
 	}
 
-	/**
-     * Sets an expected value based on a child element.
-     *
-     * @param 	string		$name            	The name of the expected element.
-     * @param 	int			$type            	The data type of the expected value (use constants from NodeDataTypes class).
-     * @param 	?callable	[$processFunction] 	The function to process the value before setting it.
-     * @return 	INode							The node instance.
-     */
 	public function setExpectedValue(string $name, int $type = NodeDataTypes::T_MIXED, ?callable $processFunction = null) : INode {
-		$expected = new Expected($name, $type);
+		$expected = new Expected\Element($name, $type);
 		if ($processFunction !== null) {
 			$expected->process($processFunction);
 		}
@@ -136,20 +135,15 @@ abstract class Node implements INode {
 		return $this->expects($expected);
 	}
 
-	/**
-     * Appends an expected value to the node.
-     *
-     * @param string $name		The name of the value.
-     * @param string $value		The value to append.
-     * @return void
-     */
 	public function appendExpectedValue(string $name, string $value) : void {
-		if (!isset($this->expected[$name])) {
-			throw new \Exception("Key '".$name."' not expected");
+		if (!isset($this->expects[$name])) {
+			throw new \Exception("key '".$name."' not expected");
 		}
 
-		if ($this->expected[$name]->usePreValidate) {
-			$f = $this->expected[$name]->preValidateFunction;
+		$expects = $this->expects[$name];
+
+		if ($expects->isPreValidationEnabled()) {
+			$f = $expects->getPreValidateFunction();
 			$res = $f($value);
 			if (\is_string($res)) {
 				$this->appendError("'".$name."' pre-validate failed: ".$res);
@@ -162,44 +156,45 @@ abstract class Node implements INode {
 			}
 		}
 
-		if ($this->expected[$name]->useProcess) {
-			$f = $this->expected[$name]->processFunction;
+		if ($expects->isPreProcessEnabled()) {
+			$f = $expects->getPreProcessFunction();
 			$value = $f($value);
 		}
 
-		$value = $this->cast($value, $this->expected[$name]->type);
+		$value = $this->cast($value, $expects->getType());
 
-		if ($this->expected[$name]->useValidate) {
-			$f = $this->expected[$name]->validateFunction;
+		if ($expects->isValidationEnabled()) {
+			$f = $expects->getValidateFunction();
 			$res = $f($value);
 			if (\is_string($res)) {
-				$this->appendError("'".$name."' validate failed: ".$res);
+				$this->appendError("'".$name."' validation failed: ".$res);
 				return;
 			} else {
 					if (!$res) {
-						$this->appendError("'".$name."' validate failed");
+						$this->appendError("'".$name."' validation failed");
 						return;
 					}
 			}
 		}
 
-		if ($this->expected[$name]->type === NodeDataTypes::T_ARRAY) {
-			if ($this->expectedElements[$name] === null) {
-				$this->expectedElements[$name] = array();
+		if ($expects->isArray()) {
+			if ($this->expectedValues[$name] === null) {
+				$this->expectedValues[$name] = [];
 			}
 
-			$this->expectedElements[$name][] = $value;
+			//TODO: add more types (T_ARRAY_OF_*)
+			$this->expectedValues[$name][] = $value;
 		} else {
-				$this->expectedElements[$name] = $value;
+				$this->expectedValues[$name] = $value;
 		}
 	}
 
-	public function __get(string $name) {
-		return $this->expectedElements[$name];
+	public function __get(string $name): mixed {
+		return $this->expectedValues[$name];
 	}
 
 	public function __set(string $name, $value) : void {
-		$this->expectedElements[$name] = $value;
+		$this->expectedValues[$name] = $value;
 	}
 
 	public function __isset(string $name) : bool {
@@ -207,18 +202,19 @@ abstract class Node implements INode {
 	}
 
 	public function expectedElementExists(string $name) : bool {
-		return \array_key_exists($name, $this->expectedElements);
+		return \array_key_exists($name, $this->expectedValues);
 	}
-	
+
 	public function setExpectedElement(string $name, $value) : void {
-		if (\is_array($this->expectedElements[$name])) {
-			$this->expectedElements[$name][] = $value;
+		if (\is_array($this->expectedValues[$name])) {
+			$this->expectedValues[$name][] = $value;
 		}
 
-		$this->expectedElements[$name] = $value;
+		$this->expectedValues[$name] = $value;
 	}
 
-	private function cast($value, $type) {
+	private function cast($value, $type): mixed {
+		//TODO: add more types (T_ARRAY_OF_*)
 		switch($type) {
 			case NodeDataTypes::T_STRING;
 				$value = (string) $value;
@@ -278,14 +274,24 @@ abstract class Node implements INode {
 			return;
 		}
 
+		$expects = $this->getExpectedAttributes();
+
 		foreach ($attributes as $key => $value) {
 			$key = \strtolower($key);
 			$this->attributes[$key] = $value;
+
+			if (\array_key_exists($key, $expects)) {
+				$this->appendExpectedValue($key, $value);
+			}
 		}
 	}
 
 	public function setData(?string $data) : void {
 		$this->data = $data;
+	}
+
+	public function getData() : ?string {
+		return $this->data;
 	}
 	
 	public function setIgnoreChildren(bool $value) : void {
@@ -309,13 +315,13 @@ abstract class Node implements INode {
 	}
 
 	public function cleanChildren() : void {
-		$this->children = array();
-		$this->childElementCount = 0;
+		$this->children = [];
+		$this->childElementsQty = 0;
 	}
 
 	public function appendChild(INode $child) : INode {
 		$this->children[] = $child;
-		$this->childElementCount++;
+		$this->childElementsQty++;
 		$child->setParserReference($child, $this->parser);
 		return $child;
 	}
@@ -340,15 +346,13 @@ abstract class Node implements INode {
 		for ($i = 0; $i < $count; $i++) {
 			if ($this->children[$i] === $childNode) {
 				\array_splice($this->children, $i, 1);
-				$this->childElementCount--;
+				$this->childElementsQty--;
 				$childNode->parentNode = null;
 				return $childNode;
 			}
 		}
 
 		throw new \Exception("Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.");
-
-		return $childNode;
 	}
 
 	public function remove() : void {
@@ -360,7 +364,7 @@ abstract class Node implements INode {
 		for ($i = $count; $i >= 0; $i--) {
 			if ($this->parentNode->children[$i] === $this) {
 				\array_splice($this->parentNode->children, $i, 1);
-				$this->parentNode->childElementCount--;
+				$this->parentNode->childElementsQty--;
 				$this->parentNode = null;
 				return;
 			}
@@ -409,5 +413,13 @@ abstract class Node implements INode {
 	protected function appendError(string $text) : void {
 		$this->errors[] = $text;
 		$this->errorsExists = true;
+	}
+
+	public function errorsExists() : bool {
+		return $this->errorsExists;
+	}
+
+	public function getErrors() : array {
+		return $this->errors;
 	}
 }

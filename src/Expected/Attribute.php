@@ -17,19 +17,18 @@ limitations under the License.
 
 */
 
-namespace ArturasKaukenas\DOM\HTML;
-use ArturasKaukenas\DOM;
+namespace ArturasKaukenas\DOM\Expected;
 
-final class HTMLHeadElement extends HTMLElement {
-	public function __construct() {
-		$this->expects(
-			(new DOM\Expected\Element("title", DOM\NodeDataTypes::T_STRING))->
-				process(
-					function ($value) {
-						$this->parentNode->TITLE = $value;
-						return $value;
-					}
-				)
-			);
+use ArturasKaukenas\DOM\NodeDataTypes;
+
+/**
+ * Represents the expected attribte of a node.
+ *
+ */
+class Attribute extends Expected {
+
+	public function __construct(string $name, int $type = NodeDataTypes::T_MIXED) {
+		$name = \strtolower($name);
+		parent::__construct($name, $type);
 	}
 }

@@ -48,14 +48,14 @@ interface IParser {
 	/**
      * Checks if any parsing errors occurred.
      *
-     * @return bool True if parsing errors exist, false otherwise.
+     * @return bool
      */
 	public function errorsExists() : bool;
 
 	/**
      * Retrieves parsing errors.
      *
-     * @return array<string> An array containing parsing errors.
+     * @return array<string>
      */
 	public function getErrors() : array;
 

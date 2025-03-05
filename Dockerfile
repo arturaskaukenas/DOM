@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Run and test
-FROM php:7.3-cli AS base
+FROM php:8.0-cli AS base
 RUN apt-get update -y \
     && apt-get install libxml2-dev libtidy-dev libzip-dev wget zip -y \
     && docker-php-ext-install xml \

@@ -23,9 +23,9 @@ interface INode extends INodeBasic, INodeActions {
 	/**
      * Sets an expected values, templates, processing rules for child element.
      *
-     * @param 	Expected $expected    				Rules class.
+     * @param 	Expected\IExpected $expected    				Rules class.
      */
-	public function expects(Expected $expected) : INode;
+	public function expects(Expected\IExpected $expected) : INode;
 	
 	/**
      * Sets an expected node template for child element.
@@ -33,17 +33,17 @@ interface INode extends INodeBasic, INodeActions {
      * @param 	string $name    					The name of the expected element.
      * @param 	string|\ReflectionClass $object		The class name or \ReflectionClass instance representing the expected object.
      * @param 	bool $isArray						Indicates whether the expected element is an array or single element.
-     * @return 	INode 								The node instance.
+     * @return INode 							The node instance.
      */
-	public function setExpectedObject(string $name, $object, bool $isArray) : INode;
+	public function setExpectedObject(string $name, string|\ReflectionClass $object, bool $isArray = false) : INode;
 
 	/**
      * Sets an expected value based on a child element.
      *
-     * @param 	string		$name            	The name of the expected element.
-     * @param 	int			$type            	The data type of the expected value (use constants from NodeDataTypes class).
-     * @param 	?callable	[$processFunction] 	The function to process the value before setting it.
-     * @return 	INode							The node instance.
+     * @param 	string		$name            	     The name of the expected element.
+     * @param 	int			$type               	The data type of the expected value (use constants from NodeDataTypes class).
+     * @param 	?callable	[$processFunction]            The function to process the value before setting it.
+     * @return INode						     The node instance.
      */
 	public function setExpectedValue(string $name, int $type, ?callable $processFunction = null) : INode;
 
@@ -51,7 +51,7 @@ interface INode extends INodeBasic, INodeActions {
      * Sets a callback to parse data.
      *
      * @param 	callable	$callback 			The parser callback function.
-     * @return 	void
+     * @return void
      */
 	public function useDataParser(callable $callback) : void;
 
@@ -59,7 +59,7 @@ interface INode extends INodeBasic, INodeActions {
      * Sets whether child elements should be ignored or not.
      *
      * @param 	bool		$value
-     * @return 	void
+     * @return void
      */
 	public function setIgnoreChildren(bool $value) : void;
 
@@ -67,7 +67,7 @@ interface INode extends INodeBasic, INodeActions {
      * Sets whether child elements should be ignored or not only when initial value not set.
      *
      * @param 	bool		$value
-     * @return 	void
+     * @return void
      */
 	public function setIgnoreChildrenIfNotExists(bool $value) : void;
 
@@ -75,7 +75,7 @@ interface INode extends INodeBasic, INodeActions {
      * Configures whether to treat inner content as child elements.
      *
      * @param 	bool		$value
-     * @return 	void
+     * @return void
      */
 	public function setDataAsChildren(bool $value) : void;
 
@@ -83,7 +83,7 @@ interface INode extends INodeBasic, INodeActions {
      * Checks if the expected element exists.
      *
      * @param 	string		$name
-     * @return 	bool
+     * @return bool
      */
 	public function expectedElementExists(string $name) : bool;
 
@@ -92,7 +92,7 @@ interface INode extends INodeBasic, INodeActions {
      *
      * @param 	string		$name
      * @param 	mixed		$value
-     * @return 	void
+     * @return void
      */
 	public function setExpectedElement(string $name, $value) : void;
 
@@ -100,7 +100,7 @@ interface INode extends INodeBasic, INodeActions {
      * Gets the value of the expected element.
      *
      * @param 	string		$name
-     * @return 	mixed
+     * @return mixed
      */
 	public function __get(string $name);
 	
@@ -109,15 +109,29 @@ interface INode extends INodeBasic, INodeActions {
      *
      * @param 	string		$name
      * @param 	mixed		$value
-     * @return 	void
+     * @return void
      */
 	public function __set(string $name, $value) : void;
 
 	/**
      * Checks if the expected element exists.
      *
-     * @param 	string		$name
-     * @return 	bool
+     * @param  string		$name
+     * @return bool
      */
 	public function __isset(string $name): bool;
+
+     /**
+      * Checks if there are any errors.
+      *
+      * @return bool
+      */
+	public function errorsExists() : bool;
+
+     /**
+      * Retrieves an array of errors.
+      *
+      * @return array
+      */
+      public function getErrors() : array;
 }

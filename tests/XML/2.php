@@ -19,7 +19,7 @@
 					\assert($node->AUTHOR === \strtoupper("Gambardella, Matthew"));
 					\assert($node->TITLE === "XML Developer's Guide");
 					\assert($node->PRICE === null);
-					\assert($node->errors[0] === "'PRICE' validate failed: Should be cheaper than 10");
+					\assert($node->getErrors()[0] === "'PRICE' validation failed: Should be cheaper than 10");
 				} else if ($node->ID === 2) {
 						\assert($node->AUTHOR === \strtoupper("Ralls, Kim"));
 						\assert($node->PUBLISH_DATE instanceof \DateTime);
@@ -27,7 +27,7 @@
 
 				echo "\n\nBook:";
 				echo "\nErrors:";
-				var_dump($node->errors);
+				var_dump($node->getErrors());
 				echo "\n\n";
 				echo "Title: ".$node->TITLE."\n";
 				echo "Author: ".$node->AUTHOR."\n";

@@ -20,16 +20,22 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 class NodeDataTypes {
-	const T_UNDEFINED = -10;
-	const T_PROTO = -1;
-	const T_MIXED = 0;
-	const T_ARRAY = 1;
-	const T_STRING = 2;
-	const T_INT = 3;
-	const T_FLOAT = 4;
-	const T_BOOL = 5;
+	public const T_UNDEFINED = -100;
+	public const T_PROTO = -2;
+	public const T_ARRAY = -1;
+	public const T_MIXED = 0;
+	public const T_STRING = 1;
+	public const T_INT = 2;
+	public const T_FLOAT = 3;
+	public const T_BOOL = 4;
+	public const T_ARRAY_OF_PROTO = -12;
+	public const T_ARRAY_OF_MIXED = 10;
+	public const T_ARRAY_OF_STRING = 11;
+	public const T_ARRAY_OF_INT = 12;
+	public const T_ARRAY_OF_FLOAT = 13;
+	public const T_ARRAY_OF_BOOL = 14;
 
-	static function getTypeName(int $type) {
+	public static function getTypeName(int $type): string {
 		$types = (new \ReflectionClass(__CLASS__))->getConstants();
 		foreach ($types as $key => $value) {
 			if ($value === $type) {

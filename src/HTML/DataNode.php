@@ -22,15 +22,15 @@ namespace ArturasKaukenas\DOM\HTML;
 use ArturasKaukenas\DOM;
 
 final class DataNode extends Node implements DOM\IDataNode {
-	const NODE_NAME = "DataNode";
+	public const NODE_NAME = "DataNode";
 
-	public $dataAsChildren = false;
+	public bool $dataAsChildren = false;
 
 	public function getExpected() : array {
-		return array();
+		return [];
 	}
 
-	public function expects(DOM\Expected $expected) : DOM\INode {
+	public function expects(DOM\Expected\IExpected $expected) : DOM\INode {
 		throw new \Exception("Unable to use 'expects' for data element");
 		return $this;
 	}

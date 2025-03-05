@@ -145,7 +145,7 @@ class BOOK extends DOM\XML\Node {
 	public function __construct() {
 		$this->
 			expects(
-				(new DOM\Expected("author", DOM\NodeDataTypes::T_STRING))->
+				(new DOM\Expected\Element("author", DOM\NodeDataTypes::T_STRING))->
 					process(
 						function ($value) : string {
 							return \strtoupper((string) $value);
@@ -155,7 +155,7 @@ class BOOK extends DOM\XML\Node {
 			setExpectedValue("title", DOM\NodeDataTypes::T_STRING)->
 			setExpectedValue("genre", DOM\NodeDataTypes::T_STRING)->
 			expects(
-				(new DOM\Expected("price", DOM\NodeDataTypes::T_FLOAT))->
+				(new DOM\Expected\Element("price", DOM\NodeDataTypes::T_FLOAT))->
 					validate(//Example
 						function (float $value) {
 							if ($value > 10) {
@@ -211,18 +211,12 @@ The `Node` class is an abstract representation of a DOM node, implementing the [
 
 #### Properties
 
-- **`?string $name`** *(read-only)*: The name of the node.
-- **`array<string, mixed> $attributes`** *(read/write)*: The attributes of the node.
-- **`?string $data`** *(read/write)*: The data associated with the node.
-- **`int $childElementCount`** *(read-only)*: The number of child elements.
+- **`?string $nodeName`** *(read-only)*: The name of the node.
 - **`?INode $parentNode`** *(read-only)*: The parent node of this node.
-- **`bool $cleanOnFinalize`** *(read/write)*: Indicates whether the node should be cleaned upon finalization.
+- **`int $childElementsQty`** *(read-only)*: The number of child elements.
 - **`bool $dataAsChildren`** *(read-only)*: Indicates whether data should be treated as children.
 - **`bool $ignoreChildren`** *(read-only)*: Indicates whether child nodes should be ignored.
-- **`?callable $dataParser`** *(read/write)*: A callback function for parsing node data.
-- **`bool $errorsExists`** *(read-only)*: Indicates whether parsing errors exist.
-- **`array<string> $errors`** *(read-only)*: An array of error messages associated with the node.
-- **`?IParser $parser`** *(read-only)*: The parser instance associated with the node.
+- **`bool $cleanOnFinalize`** *(read/write)*: Indicates whether the node should be cleaned upon finalization.
 
 ---
 
@@ -233,11 +227,11 @@ The `Node` class is an abstract representation of a DOM node, implementing the [
 
 ##### `expects`
 ```php
-public function expects(Expected $expected): INode;
+public function expects(DOM\Expected\IExpected $expected): INode;
 ```
 - **Description:** Sets expected values, templates, or processing rules for a child element.
 - **Parameters:**
-  - `Expected $expected`: Rules class.
+  - `IExpected $expected`: Rules class.
 - **Returns:**
   - `INode`: The current node instance.
 
@@ -245,7 +239,7 @@ public function expects(Expected $expected): INode;
 
 ##### `setExpectedObject`
 ```php
-public function setExpectedObject(string $name, $object, bool $isArray): INode;
+public function setExpectedObject(string $name, $object, bool $isArray = false): INode;
 ```
 - **Description:** Sets an expected node template for a child element.
 - **Parameters:**
@@ -687,7 +681,34 @@ public function setParser(IParser $parser) : void;
 public function getExpected() : array;
 ```
 - **Description:** Retrieves the expected structure of the node.
-- **Returns:** `array`: The expected structure of the node.
+- **Returns:** `array<Expected\IExpected>`: The expected structure of the node.
+
+---
+
+##### `getExpectedElements`
+```php
+public function getExpectedElements() : array;
+```
+- **Description:** Retrieves the expected child elements of the node.
+- **Returns:** `array<Expected\Element>`: The expected structure of the node.
+
+---
+
+##### `getExpectedAttributes`
+```php
+public function getExpectedAttributes() : array;
+```
+- **Description:** Retrieves the expected attributes of the node.
+- **Returns:** `array<Expected\Attribute>`: The expected structure of the node.
+
+---
+
+##### `getData`
+```php
+public function getData() : ?string;
+```
+- **Description:** Retrieves the node's data.
+- **Returns:** `?string`
 
 ---
 
@@ -737,6 +758,22 @@ public function setInnerXML(?string $data) : void;
 
 ---
 
+##### `errorsExists`
+```php
+public function errorsExists() : bool;
+```
+- **Description:** Checks if there are any errors.
+- **Returns:** `bool`
+
+---
+
+##### `getErrors`
+```php
+public function getErrors() : array;
+```
+- **Description:** Retrieves an array of errors.
+- **Returns:** `array<string>`
+
 ### IParser Interface
 
 `IParser` represents a parser.
@@ -780,7 +817,7 @@ public function finalize() : void;
 public function errorsExists() : bool;
 ```
 - **Description:** Checks if any parsing errors occurred.
-- **Returns:** `bool`: True if parsing errors exist, false otherwise.
+- **Returns:** `bool`.
 
 ---
 
@@ -789,7 +826,7 @@ public function errorsExists() : bool;
 public function getErrors() : array;
 ```
 - **Description:** Retrieves parsing errors.
-- **Returns:** `array<string>`: An array containing parsing errors.
+- **Returns:** `array<string>`.
 
 ---
 

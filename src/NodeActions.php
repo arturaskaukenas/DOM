@@ -99,7 +99,7 @@ trait NodeActions {
 	}
 
 	public function nextChild() : ?INode {
-		if ($this->childIterator > $this->childElementCount) {
+		if ($this->childIterator > $this->childElementsQty) {
 			return null;
 		}
 
@@ -109,7 +109,7 @@ trait NodeActions {
 
 	public function iterateChild() : ?INode {
 		$child = $this->currentChild();
-		if ($this->childIterator <= $this->childElementCount) {
+		if ($this->childIterator <= $this->childElementsQty) {
 			$this->childIterator++;
 		}
 
@@ -117,7 +117,7 @@ trait NodeActions {
 	}
 
 	public function endChild() : ?INode {
-		return $this->getChild($this->childElementCount - 1);
+		return $this->getChild($this->childElementsQty - 1);
 	}
 
 	public function resetChild() : ?INode {
@@ -130,8 +130,8 @@ trait NodeActions {
 			$tagName = \trim(\strtoupper($tagName));
 		}
 
-		$result = array();
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		$result = [];
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			if ($this->children[$i]->nodeName === $tagName) {
 				$result[] = $this->children[$i];
 			}
@@ -143,8 +143,8 @@ trait NodeActions {
 	}
 
 	public function getElementById(string $id) : ?INode {
-		$result = array();
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		$result = [];
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			if ($this->children[$i]->getAttribute("id") === $id) {
 				return $this->children[$i];
 			}
@@ -160,7 +160,7 @@ trait NodeActions {
 
 	public function getTextContents() : string {
 		$result = (string) $this->data;
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			$result = $result.$this->children[$i]->getTextContents();
 		}
 

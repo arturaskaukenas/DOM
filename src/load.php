@@ -18,7 +18,10 @@ limitations under the License.
 */
 
 	require_once("NodeDataTypes.php");
-	require_once("Expected.php");
+	require_once("Expected".\DIRECTORY_SEPARATOR."IExpected.php");
+	require_once("Expected".\DIRECTORY_SEPARATOR."Expected.php");
+	require_once("Expected".\DIRECTORY_SEPARATOR."Attribute.php");
+	require_once("Expected".\DIRECTORY_SEPARATOR."Element.php");
 
 	require_once("IParser.php");
 	require_once("INodeBasic.php");

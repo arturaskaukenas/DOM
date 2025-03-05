@@ -100,7 +100,7 @@ END;
 	//setInnerXML templated node - validate triggered
 	$test_case->part("setInnerXML templated node - validate triggered");
 	\assert($node->PRICE === null);
-	\assert($node->errors[0] === "'PRICE' validate failed: Should be cheaper than 10");
+	\assert($node->getErrors()[0] === "'PRICE' validation failed: Should be cheaper than 10");
 
 	//setInnerXML templated node - type cast
 	$test_case->part("setInnerXML templated node - type cast");
