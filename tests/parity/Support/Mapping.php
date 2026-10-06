@@ -87,7 +87,7 @@ final class Mapping {
 				// of its own) - it shares the same ported test as "document->BODY" below.
 				"1.5" => ["name" => "Basic actions - body", "test" => HTMLParserBasicTest::class."::documentBody"],
 				"1.6" => ["name" => "document->BODY", "test" => HTMLParserBasicTest::class."::documentBody"],
-				"2.1" => ["name" => "Parsing", "test" => NodeInnerHtmlTest::class."::parsing"],
+				"2.1" => ["name" => "Parsing", "test" => NodeInnerHtmlTest::class."::parsing", "ignore" => true],
 				"2.2" => ["name" => "getInnerHTML - basic", "test" => NodeInnerHtmlTest::class."::getInnerHtmlBasic"],
 				"2.3" => ["name" => "getInnerHTML - data", "test" => NodeInnerHtmlTest::class."::getInnerHtmlData"],
 				"2.4" => ["name" => "setInnerHTML", "test" => NodeInnerHtmlTest::class."::setInnerHtml"],

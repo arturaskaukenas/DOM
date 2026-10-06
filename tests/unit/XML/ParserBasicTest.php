@@ -29,7 +29,7 @@ use ArturasKaukenas\tests\TestCase;
  */
 final class ParserBasicTest extends TestCase {
 	#[Test]
-	#[TestDox("1 Basic")]
+	#[TestDox("Basic")]
 	public function fullParseOfCatalogDoesNotThrow() : void {
 		$this->expectNotToPerformAssertions();
 

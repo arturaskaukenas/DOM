@@ -31,7 +31,7 @@ use ArturasKaukenas\tests\TestCase;
  */
 final class ParserRegisteredNodeTest extends TestCase {
 	#[Test]
-	#[TestDox("2 Registered node, processors, validators")]
+	#[TestDox("Registered node, processors, validators")]
 	public function registeredBookNodeIsProcessedValidatedAndCast() : void {
 		$parser = new Parser();
 		$parser

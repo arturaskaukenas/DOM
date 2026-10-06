@@ -29,13 +29,6 @@ use ArturasKaukenas\tests\TestCase;
 
 /**
  * Ported from simple_tests/XML/6.php ("6. Advanced actions").
- *
- * Each part below is an independent PHPUnit test (fresh setUp() per test).
- * setInnerXML() always discards the node's previous children/data before
- * re-parsing, so a part only needs to replay whichever earlier-part
- * mutation would otherwise have changed what it asserts against (e.g. the
- * removeAttribute("test_attribute") call that originally preceded "getInnerXML
- * - CDATA" and everything after it).
  */
 final class NodeInnerXmlTest extends TestCase {
 	private DOM\INode $result;
@@ -72,7 +65,7 @@ final class NodeInnerXmlTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("6.1 getInnerXML - basic")]
+	#[TestDox("getInnerXML - basic")]
 	public function getInnerXmlBasic() : void {
 		$XML = <<<END
 <CONTAINER id="CONTAINER" test_attribute="&apos;&quot;"></CONTAINER>
@@ -82,7 +75,7 @@ END;
 	}
 
 	#[Test]
-	#[TestDox("6.2 getInnerXML - CDATA")]
+	#[TestDox("getInnerXML - CDATA")]
 	public function getInnerXmlCdata() : void {
 		$this->container->removeAttribute("test_attribute");
 		$this->container->setTextContents("<TAG data=\"data\"></TAG>");
@@ -95,7 +88,7 @@ END;
 	}
 
 	#[Test]
-	#[TestDox("6.3 setInnerXML")]
+	#[TestDox("setInnerXML")]
 	public function setInnerXml() : void {
 		$this->container->removeAttribute("test_attribute");
 
@@ -128,7 +121,7 @@ END;
 	}
 
 	#[Test]
-	#[TestDox("6.4 setInnerXML templated node - triggered")]
+	#[TestDox("setInnerXML templated node - triggered")]
 	public function setInnerXmlTemplatedNodeTriggered() : void {
 		$this->container->setInnerXML($this->dummyBookXML());
 		$this->result->getElementById("dummy_book");
@@ -137,7 +130,7 @@ END;
 	}
 
 	#[Test]
-	#[TestDox("6.5 setInnerXML templated node - validate triggered")]
+	#[TestDox("setInnerXML templated node - validate triggered")]
 	public function setInnerXmlTemplatedNodeValidateTriggered() : void {
 		$node = $this->dummyBookNode();
 
@@ -146,7 +139,7 @@ END;
 	}
 
 	#[Test]
-	#[TestDox("6.6 setInnerXML templated node - type cast")]
+	#[TestDox("setInnerXML templated node - type cast")]
 	public function setInnerXmlTemplatedNodeTypeCast() : void {
 		$node = $this->dummyBookNode();
 
@@ -155,7 +148,7 @@ END;
 	}
 
 	#[Test]
-	#[TestDox("6.7 setInnerXML templated node - process")]
+	#[TestDox("setInnerXML templated node - process")]
 	public function setInnerXmlTemplatedNodeProcess() : void {
 		$node = $this->dummyBookNode();
 

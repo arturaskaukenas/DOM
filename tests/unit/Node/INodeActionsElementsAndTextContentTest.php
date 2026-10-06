@@ -27,9 +27,6 @@ use ArturasKaukenas\tests\TestCase;
 
 /**
  * Ported from simple_tests/XML/5.php ("5. INode get elements and set text contents").
- *
- * Exercises getElementsByTagName(), getElementById(), getTextContents() and
- * setTextContents() of INodeActions (the NodeActions trait).
  */
 final class INodeActionsElementsAndTextContentTest extends TestCase {
 	private DOM\INode $fullResult;
@@ -55,7 +52,7 @@ final class INodeActionsElementsAndTextContentTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("5.1 getElementsByTagName")]
+	#[TestDox("getElementsByTagName")]
 	public function getElementsByTagName() : void {
 		$this->assertCount(3, $this->result->getElementsByTagName("publish_date"));
 		$this->assertCount(3, $this->result->getElementsByTagName("pubLish_date "));
@@ -66,7 +63,7 @@ final class INodeActionsElementsAndTextContentTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("5.2 getElementById")]
+	#[TestDox("getElementById")]
 	public function getElementById() : void {
 		$this->assertSame(
 			"2000-11-17",
@@ -79,13 +76,13 @@ final class INodeActionsElementsAndTextContentTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("5.3 getTextContents")]
+	#[TestDox("getTextContents")]
 	public function getTextContents() : void {
 		$this->assertSame("2000-12-16", $this->fullResult->getElementById("text_content_test")->getTextContents());
 	}
 
 	#[Test]
-	#[TestDox("5.4 setTextContents")]
+	#[TestDox("setTextContents")]
 	public function setTextContents() : void {
 		$this->fullResult->getElementById("text_content_test")->setTextContents("2000-12-15");
 		$this->assertSame("2000-12-15", $this->fullResult->getElementById("text_content_test")->getTextContents());
@@ -95,7 +92,7 @@ final class INodeActionsElementsAndTextContentTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("5.5 setTextContents->finalizeNode")]
+	#[TestDox("setTextContents->finalizeNode")]
 	public function setTextContentsFinalizeNode() : void {
 		$this->tracker->tick = false;
 		$this->fullResult->getElementsByTagName("finalize-node-test")[0]->setTextContents("B");

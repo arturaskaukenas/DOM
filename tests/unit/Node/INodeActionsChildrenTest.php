@@ -28,15 +28,6 @@ use ArturasKaukenas\tests\TestCase;
 
 /**
  * Ported from simple_tests/XML/4.php ("4. INode children").
- *
- * Exercises the child related methods of INodeActions/INodeBasic (the
- * NodeActions trait), through the concrete XML\StdNode implementation.
- *
- * The legacy script builds up and tears down TEST_NODE_1/TEST_NODE_2 across
- * several consecutive parts (appendChild -> removeChild -> removeChild
- * exception). Each part below is still an independent PHPUnit test (fresh
- * setUp() per test), so the handful of lines that originally came from an
- * earlier part are replayed where a test genuinely needs that state.
  */
 final class INodeActionsChildrenTest extends TestCase {
 	private INode $result;
@@ -50,20 +41,20 @@ final class INodeActionsChildrenTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("4.1 getChild")]
+	#[TestDox("getChild")]
 	public function getChild() : void {
 		$this->assertNotNull($this->result->getChild(0));
 		$this->assertNotNull($this->result->getChild(1));
 	}
 
 	#[Test]
-	#[TestDox("4.2 currentChild")]
+	#[TestDox("currentChild")]
 	public function currentChild() : void {
 		$this->assertSame("bk101", $this->result->currentChild()->getAttribute("id"));
 	}
 
 	#[Test]
-	#[TestDox("4.3 nextChild")]
+	#[TestDox("nextChild")]
 	public function nextChild() : void {
 		$this->result->resetChild();
 		$this->assertSame("bk102", $this->result->nextChild()->getAttribute("id"));
@@ -72,7 +63,7 @@ final class INodeActionsChildrenTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("4.4 iterateChild")]
+	#[TestDox("iterateChild")]
 	public function iterateChild() : void {
 		$this->result->resetChild();
 
@@ -83,21 +74,21 @@ final class INodeActionsChildrenTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("4.5 endChild")]
+	#[TestDox("endChild")]
 	public function endChild() : void {
 		$this->result->resetChild();
 		$this->assertSame("bk103", $this->result->endChild()->getAttribute("id"));
 	}
 
 	#[Test]
-	#[TestDox("4.6 resetChild")]
+	#[TestDox("resetChild")]
 	public function resetChild() : void {
 		$this->assertSame("bk101", $this->result->resetChild()->getAttribute("id"));
 		$this->assertSame("bk102", $this->result->nextChild()->getAttribute("id"));
 	}
 
 	#[Test]
-	#[TestDox("4.7 appendChild")]
+	#[TestDox("appendChild")]
 	public function appendChild() : void {
 		$testNode = new StdNode;
 		$testNode->setName("TEST_NODE_1");
@@ -119,7 +110,7 @@ final class INodeActionsChildrenTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("4.8 removeChild")]
+	#[TestDox("removeChild")]
 	public function removeChild() : void {
 		[$testNode] = $this->appendTwoTestNodes();
 
@@ -132,7 +123,7 @@ final class INodeActionsChildrenTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("4.9 removeChild - exception")]
+	#[TestDox("removeChild - exception")]
 	public function removeChildException() : void {
 		[$testNode] = $this->appendTwoTestNodes();
 		$this->result->removeChild($testNode);
@@ -150,7 +141,7 @@ final class INodeActionsChildrenTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("4.10 remove")]
+	#[TestDox("remove")]
 	public function remove() : void {
 		$this->result->endChild()->remove();
 		$this->assertSame("bk102", $this->result->endChild()->getAttribute("id"));

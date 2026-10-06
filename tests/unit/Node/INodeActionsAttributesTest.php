@@ -27,10 +27,6 @@ use ArturasKaukenas\tests\TestCase;
 
 /**
  * Ported from simple_tests/XML/3.php ("3. INode attributes").
- *
- * Exercises the attribute related methods of INodeActions (the NodeActions
- * trait), through the concrete XML\StdNode implementation - the behavior is
- * format agnostic, so it is not duplicated for HTML.
  */
 final class INodeActionsAttributesTest extends TestCase {
 	private INode $node;
@@ -43,14 +39,14 @@ final class INodeActionsAttributesTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("3.1 hasAttributes")]
+	#[TestDox("hasAttributes")]
 	public function hasAttributes() : void {
 		$this->assertTrue($this->node->hasAttributes());
 		$this->assertFalse($this->node->getChild(0)->hasAttributes());
 	}
 
 	#[Test]
-	#[TestDox("3.2 hasAttribute")]
+	#[TestDox("hasAttribute")]
 	public function hasAttribute() : void {
 		$this->assertTrue($this->node->hasAttribute("testAttribute"));
 		$this->assertTrue($this->node->hasAttribute("testattribute"));
@@ -58,21 +54,21 @@ final class INodeActionsAttributesTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("3.3 getAttributeNames")]
+	#[TestDox("getAttributeNames")]
 	public function getAttributeNames() : void {
 		$this->assertSame(\strtolower("testAttribute"), $this->node->getAttributeNames()[1]);
 		$this->assertArrayNotHasKey(1, $this->node->getChild(0)->getAttributeNames());
 	}
 
 	#[Test]
-	#[TestDox("3.4 getAttribute")]
+	#[TestDox("getAttribute")]
 	public function getAttribute() : void {
 		$this->assertSame("test", $this->node->getAttribute("testattribute"));
 		$this->assertNull($this->node->getAttribute("wrongAttribute"));
 	}
 
 	#[Test]
-	#[TestDox("3.5 setAttribute")]
+	#[TestDox("setAttribute")]
 	public function setAttribute() : void {
 		$this->node->setAttribute("test", "2");
 		$this->assertSame("2", $this->node->getAttribute("test"));
@@ -104,7 +100,7 @@ final class INodeActionsAttributesTest extends TestCase {
 	}
 
 	#[Test]
-	#[TestDox("3.6 testAttribute")]
+	#[TestDox("testAttribute")]
 	public function removeAttribute() : void {
 		$this->node->removeAttribute("testAttribute");
 		$this->assertNull($this->node->getAttribute("testAttribute"));
