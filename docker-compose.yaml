@@ -6,8 +6,10 @@ services:
     command: bash -c "cd /var/target-lib && composer install && composer test"
     volumes:
       - ./composer.json:/var/target-lib/composer.json
+      - ./phpunit.xml:/var/target-lib/phpunit.xml
       - ./src:/var/target-lib/src
       - ./tests:/var/target-lib/tests
+      - ./simple_tests:/var/target-lib/simple_tests
    generate-docs:
     build:
       context: .

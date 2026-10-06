@@ -16,7 +16,8 @@
 		"ext-xml": "*"
 	},
 	"require-dev": {
-		"arturaskaukenas/simpletest": "1.0.0"
+		"arturaskaukenas/simpletest": "1.0.0",
+		"phpunit/phpunit": "^13.4"
 	},
     "suggest": {
 		"ext-tidy": "HTML support"
@@ -26,10 +27,18 @@
 			"src/"
 		]
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"ArturasKaukenas\\tests\\": "tests/"
+		}
+	},
 	"prefer-stable": true,
 	"scripts":{
-		"test": "php tests/all.php",
+		"test": "phpunit",
+		"test:parity": "phpunit --testsuite parity",
 		"test_container": "docker compose run --build --rm test",
+		"simple_test": "php simple_tests/all.php",
+		"simple_test_container": "docker compose run --build --rm test bash -c \"composer install && composer simple_test\"",
 		"generate-docs": "docker compose run --build --rm generate-docs"
 	}
 }
