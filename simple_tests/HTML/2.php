@@ -12,7 +12,7 @@
 	$content = \file_get_contents("./data/w3c.html");
 	
 	class SCRIPT extends HTML\HTMLElement {
-		public $dataAsChildren = false;
+		public bool $dataAsChildren = false;
 	}
 
 	$test_case->part("Parsing");
@@ -23,7 +23,7 @@
 			"SCRIPT",
 			function(HTML\INode $node) use ($tracker) {
 				$tracker->tick = true;
-				$node->js = $node->data;
+				$node->js = $node->getData();
 			}
 		);
 	$document = $parser->fullParse($content);
@@ -97,6 +97,6 @@ END;
 	$test_case->part("setInnerHTML templated node - onFinalizeNode");
 	$node = $document->getElementById("test_script");
 	\assert($node->js === "alert(1);");
-	\assert($node->data === "alert(1);");
+	\assert($node->getData() === "alert(1);");
 
 	$test_case->done();

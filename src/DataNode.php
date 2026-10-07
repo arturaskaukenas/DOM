@@ -20,15 +20,15 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 class DataNode extends Node implements IDataNode {
-	const NODE_NAME = "DataNode";
+	public const NODE_NAME = "DataNode";
 
-	public $dataAsChildren = false;
+	public bool $dataAsChildren = false;
 
 	public function getExpected() : array {
-		return array();
+		return [];
 	}
 
-	public function expects(Expected $expected) : INode {
+	public function expects(Expected\IExpected $expected) : INode {
 		throw new \Exception("Unable to use 'expects' for data element");
 		return $this;
 	}

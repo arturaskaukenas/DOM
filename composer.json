@@ -1,9 +1,8 @@
 {
 	"name": "arturaskaukenas/dom",
-	"description": "PHP XML and HTML Parser",
-	"version": "1.0.1",
+	"description": "XML/HTML document object model for PHP — build, traverse, transform and stream-parse documents",
 	"type": "library",
-	"keywords": ["DOM","XML","HTML", "Object"],
+	"keywords": ["dom", "xml", "html", "document", "parser", "streaming", "serialization", "data-binding"],
 	"license": "Apache-2.0",
 	"authors": [
 		{
@@ -12,11 +11,12 @@
 		}
 	],
 	"require": {
-		"php": ">=7.3",
+		"php": ">=8.0 <8.5",
 		"ext-xml": "*"
 	},
 	"require-dev": {
-		"arturaskaukenas/simpletest": "1.0.0"
+		"arturaskaukenas/simpletest": "1.0.0",
+		"phpunit/phpunit": "^13.4"
 	},
     "suggest": {
 		"ext-tidy": "HTML support"
@@ -26,9 +26,32 @@
 			"src/"
 		]
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"ArturasKaukenas\\tests\\": "tests/"
+		}
+	},
 	"prefer-stable": true,
 	"scripts":{
-		"test": "php tests/all.php",
-		"generate-docs": "doxygen Doxyfile"
+		"test": "phpunit",
+		"test:parity": "phpunit --testsuite parity",
+		"simple_test": "php simple_tests/all.php",
+		"test_container": "docker compose run --build --rm test",
+		"simple_test_container": "docker compose run --build --rm simple_test",
+		"test_container:8.0": "docker compose run --build --rm test-php80",
+		"test_container:8.1": "docker compose run --build --rm test-php81",
+		"test_container:8.2": "docker compose run --build --rm test-php82",
+		"test_container:8.3": "docker compose run --build --rm test-php83",
+		"test_container:8.4": "docker compose run --build --rm test",
+		"test_container_all": [
+			"@test",
+			"@test:parity",
+			"@test_container:8.0",
+			"@test_container:8.1",
+			"@test_container:8.2",
+			"@test_container:8.3",
+			"@test_container:8.4"
+		],
+		"generate-docs": "docker compose run --build --rm generate-docs"
 	}
 }

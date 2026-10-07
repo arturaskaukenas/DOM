@@ -84,12 +84,40 @@ interface INodeBasic {
 	/**
      * Retrieves the expected structure of the node.
      *
-     * @return array The expected structure of the node.
+     * @return array<Expected\IExpected> The expected structure of the node.
      */
 	public function getExpected() : array;
 
+     /**
+     * Retrieves the expected child elements of the node.
+     *
+     * @return array<Expected\Element> The expected structure of the node.
+     */
+     public function getExpectedElements() : array;
+
+     /**
+     * Retrieves the expected attributes of the node.
+     *
+     * @return array<Expected\Attribute> The expected structure of the node.
+     */
+     public function getExpectedAttributes() : array;
+
 	public function setData(?string $data) : void;
 
+     /**
+      * Retrieves the node's data.
+      *
+      * @return ?string.
+      */
+     public function getData() : ?string;
+
+     /**
+     * Appends an expected value to the node.
+     *
+     * @param string $name		The name of the value.
+     * @param string $value		The value to append.
+     * @return void
+     */
 	public function appendExpectedValue(string $name, string $value) : void;
 
 	public function setParentNode(INode $parentNode) : void;

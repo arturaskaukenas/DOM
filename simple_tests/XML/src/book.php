@@ -24,7 +24,7 @@ limitations under the License.
 				setExpectedValue("int_id", DOM\NodeDataTypes::T_INT)->
 				setExpectedValue("id", DOM\NodeDataTypes::T_INT)->//Test cast
 				expects(
-					(new DOM\Expected("author", DOM\NodeDataTypes::T_STRING))->
+					(new DOM\Expected\Element("author", DOM\NodeDataTypes::T_STRING))->
 						process(
 							function ($value) : string {
 								return \strtoupper((string) $value);
@@ -34,7 +34,7 @@ limitations under the License.
 				setExpectedValue("title", DOM\NodeDataTypes::T_STRING)->
 				setExpectedValue("genre", DOM\NodeDataTypes::T_STRING)->
 				expects(
-					(new DOM\Expected("price", DOM\NodeDataTypes::T_FLOAT))->
+					(new DOM\Expected\Element("price", DOM\NodeDataTypes::T_FLOAT))->
 						preValidate(
 							function($value) : bool {
 								if ($value === null) {

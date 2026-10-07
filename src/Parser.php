@@ -37,52 +37,52 @@ abstract class Parser implements IParser {
 	/**
      * @var int The depth of the current parsing context.
      */
-	private $depth = -1;
+	private int $depth = -1;
 
 	/**
      * @var array<string> An array containing the names of elements encountered during parsing.
      */
-	private $currentElementsNameTrace = array();
+	private array $currentElementsNameTrace = [];
 
 	/**
      * @var ?INode The root node of the parsed XML document.
      */
-	private $result = null;
+	private ?INode $result = null;
 
 	/**
      * @var array<INode> An array containing references to currently parsed node objects.
      */
-	private $currentObjectsTrace = array();
+	private array $currentObjectsTrace = [];
 
 	/**
      * @var ?INode The current parsing scope.
      */
-	private $currentScope = null;
+	private ?INode $currentScope = null;
 
 	/**
      * @var array<string, \ReflectionClass> An associative array mapping node names to their instances.
      */
-	private $registeredNodes = array();
+	private array $registeredNodes = [];
 
 	/**
      * @var ?IDataNode A reference to the latest data node encountered during parsing.
      */
-	private $latestDataElementReference = null;
+	private ?IDataNode $latestDataElementReference = null;
 
 	/**
      * @var array<string> An array containing parsing errors.
      */
-	private $errors = array();
+	private array $errors = [];
 
 	 /**
      * @var bool Indicates whether parsing errors exist.
      */
-	private $errorsExists = false;
+	private bool $errorsExists = false;
 
 	/**
      * @var array<string, callable> An associative array mapping node names and callbacks to be executed upon finalizing the node.
      */
-	private $onFinalizeNode = array();
+	private array $onFinalizeNode = [];
 
 	public function init(?INode $currentScope = null, bool $skipParser = false) : void {
 		if ($this->parser !== null) {
@@ -106,18 +106,18 @@ abstract class Parser implements IParser {
 		\xml_parser_set_option($this->parser, \XML_OPTION_CASE_FOLDING, true);
 		\xml_parser_set_option($this->parser, \XML_OPTION_TARGET_ENCODING, "UTF-8");
 		\xml_set_element_handler(
-			$this->parser,
-			function($parser, string $name, array $attributes) : void {
+			parser: $this->parser,
+			start_handler: function($parser, string $name, array $attributes) : void {
 				$this->startTagHandler($parser, $name, $attributes);
 			},
-			function($parser, string $name) : void {
+			end_handler: function($parser, string $name) : void {
 				$this->endTagHandler($parser, $name);
 			}
 		);
 
 		\xml_set_character_data_handler(
-			$this->parser,
-			function($parser, string $data) : void {
+			parser: $this->parser,
+			handler: function($parser, string $data) : void {
 				$this->dataHandler($parser, $data);
 			}
 		);
@@ -160,11 +160,11 @@ abstract class Parser implements IParser {
 		$this->parser = null;
 		$this->depth = -1;
 		$this->result = null;
-		$this->currentElementsNameTrace = array();
-		$this->currentObjectsTrace = array();
+		$this->currentElementsNameTrace = [];
+		$this->currentObjectsTrace = [];
 		$this->currentScope = null;
 		$this->latestDataElementReference = null;
-		$this->errors = array();
+		$this->errors = [];
 		$this->errorsExists = false;
 	}
 
@@ -194,7 +194,7 @@ abstract class Parser implements IParser {
 	public function onFinalizeNode(string $name, callable $callback) : IParser {
 		$name = \strtoupper($name);
 		if (!isset($this->onFinalizeNode[$name])) {
-			$this->onFinalizeNode[$name] = array();
+			$this->onFinalizeNode[$name] = [];
 		}
 
 		$this->onFinalizeNode[$name][] = $callback;
@@ -263,19 +263,19 @@ abstract class Parser implements IParser {
 	}
 
 	private function performExpectedObject(INode $scope, string $name, array $attributes) : ?INode {
-		$expected = $scope->getExpected();
-		if (!\array_key_exists($name, $expected)) {
+		$expects = $scope->getExpectedElements();
+		if (!\array_key_exists($name, $expects)) {
 			return null;
 		}
 
-		if (!$expected[$name]->usePrototype) {
+		if (!$expects[$name]->isPrototype()) {
 			return null;
 		}
 
-		if (\is_string($expected[$name]->prototypeName)) {
-			$obj = $this->getExpectedObjectByName($expected[$name]->prototypeName);
-		} else if ($expected[$name]->prototypeClass instanceof \ReflectionClass) {
-			$obj = $this->getExpectedObjectByClass($expected[$name]->prototypeClass);
+		if ($expects[$name]->getPrototypeClass() !== null) {
+			$obj = $this->getExpectedObjectByClass($expects[$name]->getPrototypeClass());
+		} else if ($expects[$name]->getPrototypeName() !== null) {
+			$obj = $this->getExpectedObjectByName($expects[$name]->getPrototypeName());
 		} else {
 				return null;
 		}
@@ -453,12 +453,12 @@ abstract class Parser implements IParser {
 			return false;
 		}
 
-		$expected = $scope->parentNode->getExpected();
-		if (!\array_key_exists($name, $expected)) {
+		$expects = $scope->parentNode->getExpectedElements();
+		if (!\array_key_exists($name, $expects)) {
 			return false;
 		}
 
-		if ($expected[$name]->usePrototype) {
+		if ($expects[$name]->isPrototype()) {
 			return false;
 		}
 

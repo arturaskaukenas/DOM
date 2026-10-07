@@ -22,19 +22,19 @@ namespace ArturasKaukenas\DOM\HTML;
 use ArturasKaukenas\DOM;
 
 abstract class Node extends DOM\Node implements INode {
-	public $dataAsChildren = true;
+	public bool $dataAsChildren = true;
 
 	public function getInner() : string {
 		return $this->getInnerHTML();
 	}
 
 	public function getInnerHTML() : string {
-		$HTML = array();
+		$HTML = [];
 		if ($this->nodeName !== null) {
 			$HTML[] = "<".$this->nodeName.$this->genAttributesHTML().">";
 		}
 
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			$HTML[] = $this->children[$i]->getInner();
 		}
 
@@ -54,7 +54,7 @@ abstract class Node extends DOM\Node implements INode {
 			return "";
 		}
 		
-		$attributes = array();
+		$attributes = [];
 		foreach ($this->attributes as $key => $value) {
 			$key = (string) $key;
 			$value = (string) $value;

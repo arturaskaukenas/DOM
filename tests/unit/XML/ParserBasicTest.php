@@ -17,19 +17,23 @@ limitations under the License.
 
 */
 
-namespace ArturasKaukenas\DOM\HTML;
-use ArturasKaukenas\DOM;
+namespace ArturasKaukenas\tests\unit\XML;
 
-final class HTMLHeadElement extends HTMLElement {
-	public function __construct() {
-		$this->expects(
-			(new DOM\Expected\Element("title", DOM\NodeDataTypes::T_STRING))->
-				process(
-					function ($value) {
-						$this->parentNode->TITLE = $value;
-						return $value;
-					}
-				)
-			);
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\TestDox;
+use ArturasKaukenas\DOM\XML\Parser;
+use ArturasKaukenas\tests\TestCase;
+
+/**
+ * Ported from simple_tests/XML/1.php ("1. Basic").
+ */
+final class ParserBasicTest extends TestCase {
+	#[Test]
+	#[TestDox("Basic")]
+	public function fullParseOfCatalogDoesNotThrow() : void {
+		$this->expectNotToPerformAssertions();
+
+		$parser = new Parser();
+		$parser->fullParse($this->fixture("XML".\DIRECTORY_SEPARATOR."books.xml"));
 	}
 }

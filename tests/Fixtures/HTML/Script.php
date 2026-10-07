@@ -17,19 +17,16 @@ limitations under the License.
 
 */
 
-namespace ArturasKaukenas\DOM\HTML;
-use ArturasKaukenas\DOM;
+namespace ArturasKaukenas\tests\Fixtures\HTML;
 
-final class HTMLHeadElement extends HTMLElement {
-	public function __construct() {
-		$this->expects(
-			(new DOM\Expected\Element("title", DOM\NodeDataTypes::T_STRING))->
-				process(
-					function ($value) {
-						$this->parentNode->TITLE = $value;
-						return $value;
-					}
-				)
-			);
-	}
+use ArturasKaukenas\DOM\HTML;
+
+/**
+ * Registered node template for <script> elements, used to exercise
+ * IParser::onFinalizeNode() and content stored as node data rather than children.
+ */
+class Script extends HTML\HTMLElement {
+	const NODE_NAME = "SCRIPT";
+
+	public bool $dataAsChildren = false;
 }

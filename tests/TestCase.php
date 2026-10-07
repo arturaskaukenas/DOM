@@ -17,19 +17,16 @@ limitations under the License.
 
 */
 
-namespace ArturasKaukenas\DOM\HTML;
-use ArturasKaukenas\DOM;
+namespace ArturasKaukenas\tests;
 
-final class HTMLHeadElement extends HTMLElement {
-	public function __construct() {
-		$this->expects(
-			(new DOM\Expected\Element("title", DOM\NodeDataTypes::T_STRING))->
-				process(
-					function ($value) {
-						$this->parentNode->TITLE = $value;
-						return $value;
-					}
-				)
-			);
+abstract class TestCase extends \PHPUnit\Framework\TestCase {
+	/**
+     * Reads the contents of a fixture file located under tests/Fixtures.
+     *
+     * @param 	string $relativePath	Path relative to the Fixtures directory, e.g. "XML/books.xml".
+     * @return 	string
+     */
+	protected function fixture(string $relativePath) : string {
+		return (string) \file_get_contents(__DIR__.\DIRECTORY_SEPARATOR."Fixtures".\DIRECTORY_SEPARATOR.$relativePath);
 	}
 }
