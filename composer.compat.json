@@ -1,0 +1,22 @@
+{
+	"name": "arturaskaukenas/dom",
+	"description": "PHP XML and HTML Parser - PHP 8.0-8.3 compatibility check (runs simple_tests only; phpunit/phpunit requires PHP >=8.4.1, see composer.json)",
+	"type": "library",
+	"license": "Apache-2.0",
+	"require": {
+		"php": ">=8.0 <8.5",
+		"ext-xml": "*"
+	},
+	"require-dev": {
+		"arturaskaukenas/simpletest": "1.0.0"
+	},
+	"suggest": {
+		"ext-tidy": "HTML support"
+	},
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"prefer-stable": true
+}

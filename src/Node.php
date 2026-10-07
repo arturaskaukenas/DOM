@@ -253,7 +253,7 @@ abstract class Node implements INode {
 				return false;
 			break;
 		}
-		
+
 		return null;
 	}
 
@@ -262,6 +262,7 @@ abstract class Node implements INode {
 	}
 
 	public function setName(string $name, bool $clean = true) : void {
+		//TODO: add bit flags, implement default behavior depending on node type (XML - case sensitive, HTML - case insensitive)
 		if ($clean) {
 			$name = \trim(\strtoupper($name));
 		}
@@ -293,7 +294,7 @@ abstract class Node implements INode {
 	public function getData() : ?string {
 		return $this->data;
 	}
-	
+
 	public function setIgnoreChildren(bool $value) : void {
 		$this->ignoreChildren = $value;
 	}
@@ -381,7 +382,7 @@ abstract class Node implements INode {
 		if (!$this->postProcess()) {
 			return false;
 		}
-		
+
 		if ($this->cleanOnFinalize) {
 			return false;
 		}

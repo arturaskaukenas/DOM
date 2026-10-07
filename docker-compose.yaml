@@ -3,12 +3,73 @@ services:
     build:
       context: .
       target: base
-    command: bash -c "cd /var/target-lib && composer install && composer test"
+      args:
+        PHP_VERSION: "8.4"
+    command: bash -c "cd /var/target-lib && composer install && composer test && composer test:parity && composer test"
     volumes:
       - ./composer.json:/var/target-lib/composer.json
       - ./phpunit.xml:/var/target-lib/phpunit.xml
       - ./src:/var/target-lib/src
       - ./tests:/var/target-lib/tests
+      - ./simple_tests:/var/target-lib/simple_tests
+   simple_test:
+    build:
+      context: .
+      target: base
+      args:
+        PHP_VERSION: "8.3"
+    command: bash -c "cd /var/target-lib && composer install --no-interaction && php simple_tests/all.php"
+    volumes:
+      - ./composer.compat.json:/var/target-lib/composer.json
+      - ./src:/var/target-lib/src
+      - ./simple_tests:/var/target-lib/simple_tests
+   # PHP 8.0-8.3 compatibility check: phpunit/phpunit requires PHP >=8.4.1, so it
+   # cannot be resolved as a dev dependency on these older runtimes (see
+   # composer.compat.json). These services instead run the dependency-light
+   # simple_tests suite.
+   test-php80:
+    build:
+      context: .
+      target: base
+      args:
+        PHP_VERSION: "8.0"
+    command: bash -c "cd /var/target-lib && composer install --no-interaction && php simple_tests/all.php"
+    volumes:
+      - ./composer.compat.json:/var/target-lib/composer.json
+      - ./src:/var/target-lib/src
+      - ./simple_tests:/var/target-lib/simple_tests
+   test-php81:
+    build:
+      context: .
+      target: base
+      args:
+        PHP_VERSION: "8.1"
+    command: bash -c "cd /var/target-lib && composer install --no-interaction && php simple_tests/all.php"
+    volumes:
+      - ./composer.compat.json:/var/target-lib/composer.json
+      - ./src:/var/target-lib/src
+      - ./simple_tests:/var/target-lib/simple_tests
+   test-php82:
+    build:
+      context: .
+      target: base
+      args:
+        PHP_VERSION: "8.2"
+    command: bash -c "cd /var/target-lib && composer install --no-interaction && php simple_tests/all.php"
+    volumes:
+      - ./composer.compat.json:/var/target-lib/composer.json
+      - ./src:/var/target-lib/src
+      - ./simple_tests:/var/target-lib/simple_tests
+   test-php83:
+    build:
+      context: .
+      target: base
+      args:
+        PHP_VERSION: "8.3"
+    command: bash -c "cd /var/target-lib && composer install --no-interaction && php simple_tests/all.php"
+    volumes:
+      - ./composer.compat.json:/var/target-lib/composer.json
+      - ./src:/var/target-lib/src
       - ./simple_tests:/var/target-lib/simple_tests
    generate-docs:
     build:
