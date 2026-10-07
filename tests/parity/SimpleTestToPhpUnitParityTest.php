@@ -53,7 +53,7 @@ final class SimpleTestToPhpUnitParityTest extends TestCase {
 	/** @var array{success: bool, tests: array<string, bool>} */
 	private static array $phpUnitResult;
 
-	/** @var array<string, array<string, array{name: string, test: string}>> */
+	/** @var array<string, array<string, array{name: string, test: string, ignore?: bool}>> */
 	private static array $mapping;
 
 	public static function setUpBeforeClass() : void {
@@ -186,12 +186,21 @@ final class SimpleTestToPhpUnitParityTest extends TestCase {
 	}
 
 	/**
+     * Entries flagged "ignore" (e.g. a legacy "Parsing" case that has no
+     * dedicated ported test because parsing is already exercised by every
+     * other test's setUp() in that class) are intentionally excluded: they
+     * are not required to point at an existing, passing PHPUnit test.
+     *
      * @return 	array<int, string>
      */
 	private function allMappedPhpUnitTests() : array {
 		$tests = [];
 		foreach (self::$mapping as $suite) {
 			foreach ($suite as $entry) {
+				if ($entry["ignore"] ?? false) {
+					continue;
+				}
+
 				$tests[$entry["test"]] = true;
 			}
 		}

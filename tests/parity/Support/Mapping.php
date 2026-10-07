@@ -39,10 +39,16 @@ use ArturasKaukenas\tests\unit\HTML\NodeInnerHtmlTest;
  * untracked: every legacy leaf test must appear here under its exact name,
  * the test it points at must exist and pass, and every ported PHPUnit test
  * must be referenced from here at least once.
+ *
+ * Set "ignore" => true on an entry to opt it out of the "test exists and
+ * passed" check only - the legacy case itself is still required to be
+ * present (under its exact name) and to have passed. Use this for a legacy
+ * case with no dedicated ported test, e.g. a "Parsing" part that is already
+ * exercised implicitly by every other test's setUp() in that class.
  */
 final class Mapping {
 	/**
-     * @return 	array<string, array<string, array{name: string, test: string}>>
+     * @return 	array<string, array<string, array{name: string, test: string, ignore?: bool}>>
      */
 	public static function get() : array {
 		return [
