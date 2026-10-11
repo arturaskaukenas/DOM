@@ -21,43 +21,6 @@ namespace ArturasKaukenas\DOM;
 
 interface INodeBasic {
 	/**
-     * Sets the name of the node (nodeName).
-     *
-     * @param string $name		The name to set.
-     * @param bool $clean		Automatically trim and uppercase provided node name.
-     * @return void
-     */
-	public function setName(string $name, bool $clean) : void;
-
-	/**
-     * Sets the attributes for the node.
-     *
-     * @param array $attributes<string, mixed>	An array containing the attributes to set.
-     * @return void
-     */
-	public function setAttributes(array $attributes) : void;
-
-	/**
-     * Appends a child node to the end of the list of children of a current node.
-     *
-	 * @link https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild
-	 *
-     * @param INode $child	The child node to append.
-     * @return INode		The appended child node.
-     */
-	public function appendChild(INode $child) : INode;
-
-	/**
-     * Removes a child node from the current node.
-     *
-	 * @link https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild
-	 *
-     * @param INode $childNode The child node to remove.
-     * @return INode The removed child node.
-     */
-	public function removeChild(INode $childNode) : INode;
-
-	/**
      * Removes the current node from its parent node, if it exists.
      *
 	 * @link https://developer.mozilla.org/en-US/docs/Web/API/Element/remove
@@ -67,40 +30,12 @@ interface INodeBasic {
 	public function remove() : void;
 
 	/**
-     * Cleans all children nodes of the current node.
-     *
-     * @return void
-     */
-	public function cleanChildren() : void;
-
-	/**
      * Sets the parser instance for the node.
      *
      * @param IParser $parser The parser instance.
      * @return void
      */
 	public function setParser(IParser $parser) : void;
-
-	/**
-     * Retrieves the expected structure of the node.
-     *
-     * @return array<Expected\IExpected> The expected structure of the node.
-     */
-	public function getExpected() : array;
-
-     /**
-     * Retrieves the expected child elements of the node.
-     *
-     * @return array<Expected\Element> The expected structure of the node.
-     */
-     public function getExpectedElements() : array;
-
-     /**
-     * Retrieves the expected attributes of the node.
-     *
-     * @return array<Expected\Attribute> The expected structure of the node.
-     */
-     public function getExpectedAttributes() : array;
 
 	public function setData(?string $data) : void;
 
@@ -125,6 +60,6 @@ interface INodeBasic {
 	public function setParserReference(INode $node, ?IParser $parser);
 
 	public function updateChildrenParser() : void;
-	
+
 	public function finalize() : bool;
 }

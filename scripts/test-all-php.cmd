@@ -1,1 +1,0 @@
-cd .. && composer test_container_all

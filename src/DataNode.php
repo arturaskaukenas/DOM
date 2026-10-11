@@ -20,7 +20,7 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 class DataNode extends Node implements IDataNode {
-	public const NODE_NAME = "DataNode";
+	public const string NODE_NAME = "DataNode";
 
 	public bool $dataAsChildren = false;
 
@@ -33,7 +33,7 @@ class DataNode extends Node implements IDataNode {
 		return $this;
 	}
 
-	public function setName(string $name, bool $clean = true) : void {
+	public function setName(string $name) : void {
 		throw new \Exception("Unable to set name for data element");
 	}
 
@@ -56,12 +56,12 @@ class DataNode extends Node implements IDataNode {
 	public function appendChild(INode $child) : INode {
 		throw new \Exception("Unable to add elements to data element");
 	}
-	
+
 	public function appendData(string $data) : void {
 		if ($this->data === null) {
 			$this->data = "";
 		}
 
-		$this->data = $this->data.$data;
+		$this->data.= $data;
 	}
 }

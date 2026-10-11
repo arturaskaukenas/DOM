@@ -20,5 +20,5 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 class StdNode extends Node {
-	public const NODE_NAME = "StdNode";
+	public const string NODE_NAME = "StdNode";
 }

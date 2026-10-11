@@ -20,13 +20,110 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 interface INode extends INodeBasic, INodeActions {
+	/** The name of the node. */
+	public ?string $nodeName { get; }
+
+	/** The parent node. */
+	public ?INode $parentNode { get; }
+
+	/** The number of child elements. */
+	public int $childElementsQty { get; }
+
+	/** Flag indicating whether to treat data as children. */
+	public bool $dataAsChildren { get; set; }
+
+	/** Flag indicating whether to ignore children. */
+	public bool $ignoreChildren { get; set; }
+
+	/** Flag indicating whether to clean the node on finalize. */
+	public bool $cleanOnFinalize { get; set; }
+
+	/** Whether attribute names are case-sensitive (true for XML, false for HTML). */
+	public bool $caseSensitiveAttributes { get; }
+
+	/** Whether tag names are case-sensitive (true for XML, false for HTML). */
+	public bool $caseSensitiveNodeName { get; }
+
+	/**
+     * Sets whether node names and attribute names should be treated case-sensitively.
+     *
+     * @param ?bool $caseSensitiveNodeName Whether tag and node names are case-sensitive, null for default.
+     * @param ?bool $caseSensitiveAttributes Whether attribute names are case-sensitive, null for default.
+     * @return IParser The parser instance for method chaining.
+     */
+	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : INode;
+
+	/**
+     * Sets the name of the node (nodeName).
+     *
+     * @param string $name		The name to set.
+     * @return void
+     */
+	public function setName(string $name) : void;
+
+	/**
+     * Sets the attributes for the node.
+     *
+     * @param array $attributes<string, mixed>	An array containing the attributes to set.
+     * @return void
+     */
+	public function setAttributes(array $attributes) : void;
+
+	/**
+     * Appends a child node to the end of the list of children of a current node.
+     *
+	 * @link https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild
+	 *
+     * @param INode $child	The child node to append.
+     * @return INode		The appended child node.
+     */
+	public function appendChild(INode $child) : INode;
+
+	/**
+     * Removes a child node from the current node.
+     *
+	 * @link https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild
+	 *
+     * @param INode $childNode The child node to remove.
+     * @return INode The removed child node.
+     */
+	public function removeChild(INode $childNode) : INode;
+
+	/**
+     * Cleans all children nodes of the current node.
+     *
+     * @return void
+     */
+	public function cleanChildren() : void;
+
+	/**
+     * Retrieves the expected structure of the node.
+     *
+     * @return array<Expected\IExpected> The expected structure of the node.
+     */
+	public function getExpected() : array;
+
+     /**
+     * Retrieves the expected child elements of the node.
+     *
+     * @return array<Expected\Element> The expected structure of the node.
+     */
+     public function getExpectedElements() : array;
+
+     /**
+     * Retrieves the expected attributes of the node.
+     *
+     * @return array<Expected\Attribute> The expected structure of the node.
+     */
+     public function getExpectedAttributes() : array;
+
 	/**
      * Sets an expected values, templates, processing rules for child element.
      *
      * @param 	Expected\IExpected $expected    				Rules class.
      */
 	public function expects(Expected\IExpected $expected) : INode;
-	
+
 	/**
      * Sets an expected node template for child element.
      *
@@ -41,11 +138,11 @@ interface INode extends INodeBasic, INodeActions {
      * Sets an expected value based on a child element.
      *
      * @param 	string		$name            	     The name of the expected element.
-     * @param 	int			$type               	The data type of the expected value (use constants from NodeDataTypes class).
+     * @param 	NodeDataTypes	$type              	 	The data type of the expected value.
      * @param 	?callable	[$processFunction]            The function to process the value before setting it.
      * @return INode						     The node instance.
      */
-	public function setExpectedValue(string $name, int $type, ?callable $processFunction = null) : INode;
+	public function setExpectedValue(string $name, NodeDataTypes $type, ?callable $processFunction = null) : INode;
 
 	/**
      * Sets a callback to parse data.
@@ -103,7 +200,7 @@ interface INode extends INodeBasic, INodeActions {
      * @return mixed
      */
 	public function __get(string $name);
-	
+
 	/**
      * Sets an expected element value.
      *

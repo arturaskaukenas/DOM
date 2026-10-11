@@ -21,39 +21,57 @@ namespace ArturasKaukenas\DOM;
 
 /**
  * Class Node
- * @package ArturasKaukenas\DOM
- *
- * @property-read 	?string					$nodeName			The name of the node.
- * @property-read 	?INode					$parentNode			The parent node.
- * @property-read 	int						$childElementsQty	The number of child elements.
- * @property-read 	bool					$dataAsChildren		Flag indicating whether to treat data as children.
- * @property-read 	bool					$ignoreChildren		Flag indicating whether to ignore children.
- * @property 		bool					$cleanOnFinalize	Flag indicating whether to clean the node on finalize.
  */
 
 abstract class Node implements INode {
 	use NodeActions;
 
-	public ?string $nodeName = null;
-	public ?INode $parentNode = null;
-	public int $childElementsQty = 0;
+	public private(set) ?string $nodeName = null;
+	public private(set) ?INode $parentNode = null;
+	public private(set) int $childElementsQty = 0;
 	public bool $dataAsChildren = true;
 	public bool $ignoreChildren = false;
 	public bool $cleanOnFinalize = false;
 
+	public bool $caseSensitiveAttributes = true;
+	public bool $caseSensitiveNodeName = true;
+
 	protected array $attributes = [];
 	protected ?string $data = null;
 	protected array $children = [];
+
+	/** @var callable */
 	protected $dataParser = null;
+
+	/** @var array<string, Expected\IExpected> */
 	protected array $expects = [];
+
+	/** @var array<string, Expected\Element> */
 	protected array $expectsElements = [];
+
+	/** @var array<string, Expected\Attribute> */
 	protected array $expectsAttributes = [];
+
+	/** @var array<string, mixed> */
 	protected array $expectedValues = [];
 
 	protected bool $errorsExists = false;
+
+	/** @var string[] */
 	protected array $errors = [];
 
 	protected ?IParser $parser = null;
+
+	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : INode {
+		if ($caseSensitiveNodeName !== null) {
+			$this->caseSensitiveNodeName = $caseSensitiveNodeName;
+		}
+		if ($caseSensitiveAttributes !== null) {
+			$this->caseSensitiveAttributes = $caseSensitiveAttributes;
+		}
+
+		return $this;
+	}
 
 	public function setParser(IParser $parser) : void {
 		$this->parser = $parser;
@@ -107,7 +125,7 @@ abstract class Node implements INode {
 		return $this;
 	}
 
-	public function setExpectedObject(string $name, $object, bool $isArray = false) : INode {
+	public function setExpectedObject(string $name, \ReflectionClass|string $object, bool $isArray = false) : INode {
 		$type = NodeDataTypes::T_PROTO;
 		if ($isArray) {
 			$type = NodeDataTypes::T_ARRAY_OF_PROTO;
@@ -117,16 +135,16 @@ abstract class Node implements INode {
 
 		if (\is_string($object)) {
 			$expected->prototypeOfClassName($object);
-		} else if ($object instanceof \ReflectionClass) {
+		}
+
+		if ($object instanceof \ReflectionClass) {
 			$expected->prototypeOfObject($object);
-		} else {
-				throw new \Exception("object should be typeof 'string' or '\ReflectionClass'");
 		}
 
 		return $this->expects($expected);
 	}
 
-	public function setExpectedValue(string $name, int $type = NodeDataTypes::T_MIXED, ?callable $processFunction = null) : INode {
+	public function setExpectedValue(string $name, NodeDataTypes $type = NodeDataTypes::T_MIXED, ?callable $processFunction = null) : INode {
 		$expected = new Expected\Element($name, $type);
 		if ($processFunction !== null) {
 			$expected->process($processFunction);
@@ -213,22 +231,22 @@ abstract class Node implements INode {
 		$this->expectedValues[$name] = $value;
 	}
 
-	private function cast($value, $type): mixed {
+	private function cast(mixed $value, NodeDataTypes $type): mixed {
 		//TODO: add more types (T_ARRAY_OF_*)
 		switch($type) {
-			case NodeDataTypes::T_STRING;
+			case NodeDataTypes::T_STRING:
 				$value = (string) $value;
 			break;
 
-			case NodeDataTypes::T_INT;
+			case NodeDataTypes::T_INT:
 				$value = (int) $value;
 			break;
 
-			case NodeDataTypes::T_FLOAT;
+			case NodeDataTypes::T_FLOAT:
 				$value = (float) $value;
 			break;
 
-			case NodeDataTypes::T_BOOL;
+			case NodeDataTypes::T_BOOL:
 				$value = $this->castAsBool($value);
 			break;
 		}
@@ -238,33 +256,21 @@ abstract class Node implements INode {
 
 	private function castAsBool(string $value) : ?bool {
 		$value = \strtolower($value);
-		switch($value) {
-			case "1";
-			case "true";
-			case "yes";
-			case "y";
-				return true;
-			break;
-
-			case "0";
-			case "false";
-			case "no";
-			case "n";
-				return false;
-			break;
-		}
-
-		return null;
+		return match ((string)$value) {
+			"1", "true", "yes", "y" => true,
+			"0", "false", "no", "n" => false,
+			default => null
+		};
 	}
 
 	public function useDataParser(callable $callback) : void {
 		$this->dataParser = $callback;
 	}
 
-	public function setName(string $name, bool $clean = true) : void {
-		//TODO: add bit flags, implement default behavior depending on node type (XML - case sensitive, HTML - case insensitive)
-		if ($clean) {
-			$name = \trim(\strtoupper($name));
+	public function setName(string $name) : void {
+		$name = \trim($name);
+		if ($this->caseSensitiveNodeName) {
+			$name = \strtoupper($name);
 		}
 
 		$this->nodeName = $name;
@@ -278,7 +284,7 @@ abstract class Node implements INode {
 		$expects = $this->getExpectedAttributes();
 
 		foreach ($attributes as $key => $value) {
-			$key = \strtolower($key);
+			$key = $this->prepareAttributeName($key);
 			$this->attributes[$key] = $value;
 
 			if (\array_key_exists($key, $expects)) {

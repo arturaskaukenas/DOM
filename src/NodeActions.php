@@ -20,15 +20,14 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 trait NodeActions {
-	private $childIterator = 0;
+	private int $childIterator = 0;
 
 	public function hasAttributes() : bool {
 		return (\count($this->attributes) > 0);
 	}
 
 	public function hasAttribute(string $name) : bool {
-		$name = \strtolower($name);
-		return isset($this->attributes[$name]);
+		return isset($this->attributes[$this->prepareAttributeName($name)]);
 	}
 
 	public function getAttributeNames() : array {
@@ -36,7 +35,7 @@ trait NodeActions {
 	}
 
 	public function getAttribute(string $name) : ?string {
-		$name = \strtolower($name);
+		$name = $this->prepareAttributeName($name);
 		if (isset($this->attributes[$name])) {
 			return (string) $this->attributes[$name];
 		}
@@ -44,7 +43,8 @@ trait NodeActions {
 		return null;
 	}
 
-	public function setAttribute(string $name, $value) : void {
+	public function setAttribute(string $name, mixed $value) : void {
+		$name = $this->prepareAttributeName($name);
 		$valueT = (string) $value;
 
 		if ($value === null) {
@@ -78,7 +78,7 @@ trait NodeActions {
 	}
 
 	public function removeAttribute(string $name) : void {
-		$name = \strtolower($name);
+		$name = $this->prepareAttributeName($name);
 		if (!isset($this->attributes[$name])) {
 			return;
 		}
@@ -138,7 +138,7 @@ trait NodeActions {
 
 			$result = \array_merge($result, $this->children[$i]->getElementsByTagName($tagName, false));
 		}
-		
+
 		return $result;
 	}
 
@@ -148,7 +148,7 @@ trait NodeActions {
 			if ($this->children[$i]->getAttribute("id") === $id) {
 				return $this->children[$i];
 			}
-			
+
 			$tmp_el = $this->children[$i]->getElementById($id);
 			if ($tmp_el !== null) {
 				return $tmp_el;
@@ -175,7 +175,7 @@ trait NodeActions {
 		$this->parser->init($this, true);
 		$this->parser->setData($data);
 		$this->parser->finalizeNode();
-		$this->parser->clean();		
+		$this->parser->clean();
 	}
 
 	public function getInner() : string {
@@ -185,5 +185,13 @@ trait NodeActions {
 
 	public function setInner(?string $data) : void {
 		throw new \Exception("Not implemented");
+	}
+
+	private function prepareAttributeName(string $name) : string {
+		if ($this->caseSensitiveAttributes) {
+			return $name;
+		}
+
+		return \strtolower($name);
 	}
 }

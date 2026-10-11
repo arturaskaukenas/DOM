@@ -20,6 +20,11 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 interface IParser {
+	/** Whether tag names are case-sensitive (true for XML, false for HTML, null for default). */
+	public ?bool $caseSensitiveNodeName { get; }
+
+	/** Whether attributes are case-sensitive (true for XML, false for HTML, null for default). */
+	public ?bool $caseSensitiveAttributes { get; }
 
 	/**
      * Initializes the parser.
@@ -29,6 +34,15 @@ interface IParser {
      * @return void
      */
 	public function init(?INode $currentScope = null, bool $skipParser = false) : void;
+
+	/**
+     * Sets whether node names and attribute names should be treated case-sensitively.
+     *
+     * @param ?bool $caseSensitiveNodeName Whether tag and node names are case-sensitive, null for default.
+     * @param ?bool $caseSensitiveAttributes Whether attribute names are case-sensitive, null for default.
+     * @return IParser The parser instance for method chaining.
+     */
+	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : IParser;
 
 	/**
      * Parses data.

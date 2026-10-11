@@ -22,6 +22,8 @@ namespace ArturasKaukenas\DOM\HTML;
 use ArturasKaukenas\DOM;
 
 abstract class Node extends DOM\Node implements INode {
+	public bool $caseSensitiveAttributes = false;
+	public bool $caseSensitiveNodeName = false;
 	public bool $dataAsChildren = true;
 
 	public function getInner() : string {
@@ -48,12 +50,12 @@ abstract class Node extends DOM\Node implements INode {
 
 		return \implode("", $HTML);
 	}
-	
+
 	private function genAttributesHTML() : string {
 		if (\count($this->attributes) === 0) {
 			return "";
 		}
-		
+
 		$attributes = [];
 		foreach ($this->attributes as $key => $value) {
 			$key = (string) $key;
@@ -87,7 +89,7 @@ abstract class Node extends DOM\Node implements INode {
 		$this->parser->init($this);
 		$this->parser->parse($data);
 		$this->parser->finalize();
-		$this->parser->clean();		
+		$this->parser->clean();
 	}
 
 	public function getValidFormatData() : string {

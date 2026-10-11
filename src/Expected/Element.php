@@ -26,11 +26,11 @@ use ArturasKaukenas\DOM\NodeDataTypes;
  *
  */
 class Element extends Expected {
-	
+
 	protected ?string $prototypeName = null;
 	protected ?\ReflectionClass $prototypeClass = null;
 
-	public function __construct(string $name, int $type = NodeDataTypes::T_MIXED) {
+	public function __construct(string $name, NodeDataTypes $type = NodeDataTypes::T_MIXED) {
 		$name = \strtoupper($name);
 		parent::__construct($name, $type);
 	}
@@ -46,7 +46,7 @@ class Element extends Expected {
 
 		$this->prototypeClass = null;
 		$this->prototypeName = $name;
-		
+
 		return $this;
 	}
 
@@ -89,7 +89,7 @@ class Element extends Expected {
 		}
 
 		if (($this->type !== NodeDataTypes::T_PROTO) && ($this->type !== NodeDataTypes::T_ARRAY_OF_PROTO)) {
-			throw new \Exception($this->name.": expected type should be 'NodeDataTypes::T_PROTO' or 'NodeDataTypes::T_ARRAY_OF_PROTO', '".NodeDataTypes::getTypeName($this->type)."' given");
+			throw new \Exception($this->name.": expected type should be 'NodeDataTypes::T_PROTO' or 'NodeDataTypes::T_ARRAY_OF_PROTO', '".$this->type->name."' given");
 		}
 	}
 }

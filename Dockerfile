@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG PHP_VERSION=8.4
+ARG PHP_VERSION=8.5
 FROM php:${PHP_VERSION}-cli AS base
 # php:8.0-cli is frozen on EOL Debian 11 "bullseye" (PHP 8.0 itself is EOL
 # upstream, so this tag no longer gets rebuilt against a current Debian base),

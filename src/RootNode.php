@@ -20,13 +20,13 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 class RootNode extends Node {
-	const NODE_NAME = "RootNode";
+	public const string NODE_NAME = "RootNode";
 
 	public function get(int $num = 0) : ?INode {
 		if ((\count($this->children)) === 0) {
 			return null;
 		}
-		
+
 		if (!isset($this->children[$num])) {
 			return null;
 		}

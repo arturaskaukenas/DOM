@@ -22,6 +22,8 @@ namespace ArturasKaukenas\DOM\XML;
 use ArturasKaukenas\DOM;
 
 abstract class Node extends DOM\Node implements INode {
+	public bool $caseSensitiveAttributes = true;
+	public bool $caseSensitiveNodeName = true;
 	public bool $dataAsChildren = true;
 
 	public function getInner() : string {
@@ -53,7 +55,7 @@ abstract class Node extends DOM\Node implements INode {
 		if (\count($this->attributes) === 0) {
 			return "";
 		}
-		
+
 		$attributes = [];
 		foreach ($this->attributes as $key => $value) {
 			$key = (string) $key;
@@ -87,7 +89,7 @@ abstract class Node extends DOM\Node implements INode {
 		$this->parser->init($this);
 		$this->parser->parse($data);
 		$this->parser->finalize();
-		$this->parser->clean();		
+		$this->parser->clean();
 	}
 
 	public function getValidXMLData() : string {

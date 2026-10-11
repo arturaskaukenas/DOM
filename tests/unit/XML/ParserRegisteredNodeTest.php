@@ -34,7 +34,7 @@ final class ParserRegisteredNodeTest extends TestCase {
 	#[TestDox("Registered node, processors, validators")]
 	public function registeredBookNodeIsProcessedValidatedAndCast() : void {
 		$parser = new Parser();
-		$parser
+		$parser->setCaseSensitive(false, false)
 			->registerNode(new \ReflectionClass(Book::class))
 			->onFinalizeNode(
 				"BOOK",
@@ -52,7 +52,6 @@ final class ParserRegisteredNodeTest extends TestCase {
 					}
 				}
 			);
-
 		$parser->fullParse($this->fixture("XML".\DIRECTORY_SEPARATOR."books.xml"));
 	}
 }

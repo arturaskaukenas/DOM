@@ -30,9 +30,9 @@ namespace ArturasKaukenas\DOM;
 abstract class Parser implements IParser {
 
 	/**
-     * @var resource|null The XML parser resource.
+     * @var \XMLParser The XML parser resource.
      */
-	private $parser = null;
+	private \XMLParser $parser = null;
 
 	/**
      * @var int The depth of the current parsing context.
@@ -97,7 +97,7 @@ abstract class Parser implements IParser {
 
 		$this->currentObjectsTrace[] = $this->result;
 		$this->currentScope = $this->result;
-		
+
 		if ($skipParser) {
 			return;
 		}
@@ -107,20 +107,31 @@ abstract class Parser implements IParser {
 		\xml_parser_set_option($this->parser, \XML_OPTION_TARGET_ENCODING, "UTF-8");
 		\xml_set_element_handler(
 			parser: $this->parser,
-			start_handler: function($parser, string $name, array $attributes) : void {
+			start_handler: function(\XMLParser $parser, string $name, array $attributes) : void {
 				$this->startTagHandler($parser, $name, $attributes);
 			},
-			end_handler: function($parser, string $name) : void {
+			end_handler: function(\XMLParser $parser, string $name) : void {
 				$this->endTagHandler($parser, $name);
 			}
 		);
 
 		\xml_set_character_data_handler(
 			parser: $this->parser,
-			handler: function($parser, string $data) : void {
+			handler: function(\XMLParser $parser, string $data) : void {
 				$this->dataHandler($parser, $data);
 			}
 		);
+	}
+
+	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : IParser {
+		if ($caseSensitiveNodeName !== null) {
+			$this->caseSensitiveNodeName = $caseSensitiveNodeName;
+		}
+		if ($caseSensitiveAttributes !== null) {
+			$this->caseSensitiveAttributes = $caseSensitiveAttributes;
+		}
+
+		return $this;
 	}
 
 	public function parse(string $data) : bool {
@@ -153,10 +164,6 @@ abstract class Parser implements IParser {
 	}
 
 	public function clean() : void {
-		if ($this->parser !== null) {
-			\xml_parser_free($this->parser);
-		}
-
 		$this->parser = null;
 		$this->depth = -1;
 		$this->result = null;
@@ -192,7 +199,10 @@ abstract class Parser implements IParser {
 	}
 
 	public function onFinalizeNode(string $name, callable $callback) : IParser {
-		$name = \strtoupper($name);
+		if ($this->caseSensitiveNodeName === true) {
+			$name = \strtoupper($name);
+		}
+
 		if (!isset($this->onFinalizeNode[$name])) {
 			$this->onFinalizeNode[$name] = [];
 		}
@@ -231,7 +241,7 @@ abstract class Parser implements IParser {
 		$this->currentObjectsTrace[] = $obj;
 		$this->currentScope = $obj;
 	}
-	
+
 	private function getCurrentScope() : INode {
 		if ($this->currentScope !== null) {
 			return $this->currentScope;
@@ -251,7 +261,7 @@ abstract class Parser implements IParser {
 
 		return $obj;
 	}
-	
+
 	private function determinateAndCreateNode(INode $scope, string $name, array $attributes) : ?INode {
 		$result = $this->performExpectedObject($scope, $name, $attributes);
 
@@ -287,7 +297,7 @@ abstract class Parser implements IParser {
 			}
 		}
 
-		$obj->setName($name, false);
+		$obj->setName($name);
 		$obj->setAttributes($attributes);
 		$obj->setParentNode($scope);
 		$obj->setIgnoreChildrenIfNotExists($ignoreChildren);
@@ -350,7 +360,7 @@ abstract class Parser implements IParser {
 			}
 		}
 
-		$obj->setName($name, false);
+		$obj->setName($name);
 		$obj->setAttributes($attributes);
 		$obj->setParentNode($scope);
 		$obj->setIgnoreChildrenIfNotExists($ignoreChildren);
@@ -368,14 +378,14 @@ abstract class Parser implements IParser {
 		$className = \implode("_", $path);
 		return $this->prepareClassNameString($className);
 	}
-	
+
 	private function prepareClassNameString(string $className) : string {
 		$className = \str_replace(":", "_", $className);//TODO: Documentation
 		$className = \str_replace("-", "_", $className);//TODO: Documentation
 		return $className;
 	}
 
-	private function endTagHandler($parser, string $name) : void {
+	private function endTagHandler(\XMLParser $parser, string $name) : void {
 		$this->closeDataElement();
 		$this->closeNode();
 
@@ -395,7 +405,7 @@ abstract class Parser implements IParser {
 
 		$this->latestDataElementReference = null;
 	}
-	
+
 	public function finalizeNode() : void {
 		$this->closeNode();
 	}
@@ -413,7 +423,7 @@ abstract class Parser implements IParser {
 				$callback($scope);
 			}
 		}
-		
+
 		if ($remove) {
 			$scope->remove();
 		}
@@ -423,7 +433,7 @@ abstract class Parser implements IParser {
 		$this->dataHandler(null, $value);
 	}
 
-	private function dataHandler($parser, string $value) : void {
+	private function dataHandler(?\XMLParser $parser, string $value) : void {
 		if (\trim($value) === "") {
 			return;
 		}

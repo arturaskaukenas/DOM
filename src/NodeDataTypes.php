@@ -19,30 +19,19 @@ limitations under the License.
 
 namespace ArturasKaukenas\DOM;
 
-class NodeDataTypes {
-	public const T_UNDEFINED = -100;
-	public const T_PROTO = -2;
-	public const T_ARRAY = -1;
-	public const T_MIXED = 0;
-	public const T_STRING = 1;
-	public const T_INT = 2;
-	public const T_FLOAT = 3;
-	public const T_BOOL = 4;
-	public const T_ARRAY_OF_PROTO = -12;
-	public const T_ARRAY_OF_MIXED = 10;
-	public const T_ARRAY_OF_STRING = 11;
-	public const T_ARRAY_OF_INT = 12;
-	public const T_ARRAY_OF_FLOAT = 13;
-	public const T_ARRAY_OF_BOOL = 14;
-
-	public static function getTypeName(int $type): string {
-		$types = (new \ReflectionClass(__CLASS__))->getConstants();
-		foreach ($types as $key => $value) {
-			if ($value === $type) {
-				return $key;
-			}
-		}
-
-		return "T_UNDEFINED";
-	}
+enum NodeDataTypes: int {
+	case T_UNDEFINED = -100;
+	case T_PROTO = -2;
+	case T_ARRAY = -1;
+	case T_MIXED = 0;
+	case T_STRING = 1;
+	case T_INT = 2;
+	case T_FLOAT = 3;
+	case T_BOOL = 4;
+	case T_ARRAY_OF_PROTO = -12;
+	case T_ARRAY_OF_MIXED = 10;
+	case T_ARRAY_OF_STRING = 11;
+	case T_ARRAY_OF_INT = 12;
+	case T_ARRAY_OF_FLOAT = 13;
+	case T_ARRAY_OF_BOOL = 14;
 }

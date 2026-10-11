@@ -25,18 +25,18 @@ interface IExpected {
 	/**
      * Constructs a new instance of the Expected class.
      *
-     * @param string $name	The name of the expected property.
-     * @param int $type		The data type of the expected property (use constants from NodeDataTypes).
+     * @param string $name				The name of the expected property.
+     * @param NodeDataTypes $type		The data type of the expected property.
      */
-	public function __construct(string $name, int $type = NodeDataTypes::T_MIXED);
+	public function __construct(string $name, NodeDataTypes $type = NodeDataTypes::T_MIXED);
 
 	/**
      * Specifies the data type of the expected property.
      *
-     * @param int $type		The data type to set (use constants from NodeDataTypes class).
+     * @param NodeDataTypes $type	The data type to set.
      * @return $this
      */
-	public function typeOf(int $type): static;
+	public function typeOf(NodeDataTypes $type): static;
 
 	 /**
      * Specifies a function for pre-validation.
@@ -87,9 +87,9 @@ interface IExpected {
 	/**
 	 * Get the data type of expected property.
 	 *
-	 * @return value-of<NodeDataTypes>.
+	 * @return NodeDataTypes.
 	 */
-	public function getType() : int;
+	public function getType() : NodeDataTypes;
 
 	/**
 	 * Get the name of expected property.

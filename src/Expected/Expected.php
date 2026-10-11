@@ -29,7 +29,7 @@ use ArturasKaukenas\DOM\NodeDataTypes;
 
 abstract class Expected implements IExpected {
 	protected string $name = "";
-	protected $type = NodeDataTypes::T_MIXED;
+	protected NodeDataTypes $type = NodeDataTypes::T_MIXED;
 
 	protected bool $preValidate = false;
 	protected $preValidateFunction = null;
@@ -42,12 +42,12 @@ abstract class Expected implements IExpected {
 
 	private ?bool $_isArray = null;
 
-	public function __construct(string $name, int $type = NodeDataTypes::T_MIXED) {
+	public function __construct(string $name, NodeDataTypes $type = NodeDataTypes::T_MIXED) {
 		$this->name = $name;
 		$this->type = $type;
 	}
 
-	public function typeOf(int $type): static {
+	public function typeOf(NodeDataTypes $type): static {
 		$this->type = $type;
 		$this->_isArray = null;
 
@@ -103,7 +103,7 @@ abstract class Expected implements IExpected {
 		return (($this->type === NodeDataTypes::T_PROTO) || ($this->type === NodeDataTypes::T_ARRAY_OF_PROTO));
 	}
 
-	public function getType() : int {
+	public function getType() : NodeDataTypes {
 		return $this->type;
 	}
 

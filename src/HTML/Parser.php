@@ -25,6 +25,8 @@ use ArturasKaukenas\DOM;
  * Parses HTML data into a DOM structure.
  */
 class Parser extends DOM\Parser {
+	protected bool $caseSensitiveNodeName = false;
+	protected bool $caseSensitiveAttributes = false;
 
 	/**
      * Converts HTML data into well-formed XHTML using Tidy.
@@ -34,12 +36,12 @@ class Parser extends DOM\Parser {
      */
 	private function convertHTML(string $data) : string {
 		//We need use tidy or DOM extensions. libxml2 SAX + HTML not possible as PHP not using htmlCreatePushParserCtxt.
-		$config = array(
+		$config = [
 			'clean' => true,
 			'doctype' => "omit",
 			'output-xml' => true,
 			'wrap' => 0
-		);
+		];
 
 		$tidy = new \tidy();
 		$tidy->parseString($data, $config);
@@ -82,7 +84,8 @@ class Parser extends DOM\Parser {
 	}
 
 	protected function newStdNode() : DOM\INode {
-		return new HTMLElement;
+		return new HTMLElement()->
+			setCaseSensitive($this->caseSensitiveNodeName, $this->caseSensitiveAttributes);
 	}
 
 	protected function newDataNode() : DOM\INode {
