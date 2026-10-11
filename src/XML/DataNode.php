@@ -22,20 +22,20 @@ namespace ArturasKaukenas\DOM\XML;
 use ArturasKaukenas\DOM;
 
 final class DataNode extends Node implements DOM\IDataNode {
-	const NODE_NAME = "DataNode";
+	public const NODE_NAME = "DataNode";
 
-	public $dataAsChildren = false;
+	public bool $dataAsChildren = false;
 
 	public function getExpected() : array {
-		return array();
+		return [];
 	}
 
-	public function expects(DOM\Expected $expected) : DOM\INode {
+	public function expects(DOM\Expected\IExpected $expected) : DOM\INode {
 		throw new \Exception("Unable to use 'expects' for data element");
 		return $this;
 	}
 
-	public function setName(string $name, bool $clean = true) : void {
+	public function setName(string $name) : void {
 		throw new \Exception("Unable to set name for data element");
 	}
 
@@ -58,7 +58,7 @@ final class DataNode extends Node implements DOM\IDataNode {
 	public function appendChild(DOM\INode $child) : DOM\INode {
 		throw new \Exception("Unable to add elements to data element");
 	}
-	
+
 	public function appendData(string $data) : void {
 		if ($this->data === null) {
 			$this->data = "";

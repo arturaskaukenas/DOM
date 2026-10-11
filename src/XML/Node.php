@@ -22,19 +22,21 @@ namespace ArturasKaukenas\DOM\XML;
 use ArturasKaukenas\DOM;
 
 abstract class Node extends DOM\Node implements INode {
-	public $dataAsChildren = true;
+	public bool $caseSensitiveAttributes = true;
+	public bool $caseSensitiveNodeName = true;
+	public bool $dataAsChildren = true;
 
 	public function getInner() : string {
 		return $this->getInnerXML();
 	}
 
 	public function getInnerXML() : string {
-		$XML = array();
+		$XML = [];
 		if ($this->nodeName !== null) {
 			$XML[] = "<".$this->nodeName.$this->genAttributesXML().">";
 		}
 
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			$XML[] = $this->children[$i]->getInnerXML();
 		}
 
@@ -53,8 +55,8 @@ abstract class Node extends DOM\Node implements INode {
 		if (\count($this->attributes) === 0) {
 			return "";
 		}
-		
-		$attributes = array();
+
+		$attributes = [];
 		foreach ($this->attributes as $key => $value) {
 			$key = (string) $key;
 			$value = (string) $value;
@@ -87,7 +89,7 @@ abstract class Node extends DOM\Node implements INode {
 		$this->parser->init($this);
 		$this->parser->parse($data);
 		$this->parser->finalize();
-		$this->parser->clean();		
+		$this->parser->clean();
 	}
 
 	public function getValidXMLData() : string {

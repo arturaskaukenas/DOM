@@ -27,6 +27,9 @@ use \ArturasKaukenas\DOM;
  * @package ArturasKaukenas\DOM\XML
  */
 class Parser extends DOM\Parser {
+	protected bool $caseSensitiveNodeName = true;
+	protected bool $caseSensitiveAttributes = true;
+
 	/**
      * Parses the entire XML data and returns the root node.
      *
@@ -78,7 +81,8 @@ class Parser extends DOM\Parser {
 	}
 
 	protected function newStdNode() : DOM\INode {
-		return new StdNode;
+		return new StdNode()->
+			setCaseSensitive($this->caseSensitiveNodeName, $this->caseSensitiveAttributes);
 	}
 
 	protected function newDataNode() : DOM\INode {

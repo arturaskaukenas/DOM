@@ -30,59 +30,59 @@ namespace ArturasKaukenas\DOM;
 abstract class Parser implements IParser {
 
 	/**
-     * @var resource|null The XML parser resource.
+     * @var \XMLParser The XML parser resource.
      */
-	private $parser = null;
+	private \XMLParser $parser = null;
 
 	/**
      * @var int The depth of the current parsing context.
      */
-	private $depth = -1;
+	private int $depth = -1;
 
 	/**
      * @var array<string> An array containing the names of elements encountered during parsing.
      */
-	private $currentElementsNameTrace = array();
+	private array $currentElementsNameTrace = [];
 
 	/**
      * @var ?INode The root node of the parsed XML document.
      */
-	private $result = null;
+	private ?INode $result = null;
 
 	/**
      * @var array<INode> An array containing references to currently parsed node objects.
      */
-	private $currentObjectsTrace = array();
+	private array $currentObjectsTrace = [];
 
 	/**
      * @var ?INode The current parsing scope.
      */
-	private $currentScope = null;
+	private ?INode $currentScope = null;
 
 	/**
      * @var array<string, \ReflectionClass> An associative array mapping node names to their instances.
      */
-	private $registeredNodes = array();
+	private array $registeredNodes = [];
 
 	/**
      * @var ?IDataNode A reference to the latest data node encountered during parsing.
      */
-	private $latestDataElementReference = null;
+	private ?IDataNode $latestDataElementReference = null;
 
 	/**
      * @var array<string> An array containing parsing errors.
      */
-	private $errors = array();
+	private array $errors = [];
 
 	 /**
      * @var bool Indicates whether parsing errors exist.
      */
-	private $errorsExists = false;
+	private bool $errorsExists = false;
 
 	/**
      * @var array<string, callable> An associative array mapping node names and callbacks to be executed upon finalizing the node.
      */
-	private $onFinalizeNode = array();
+	private array $onFinalizeNode = [];
 
 	public function init(?INode $currentScope = null, bool $skipParser = false) : void {
 		if ($this->parser !== null) {
@@ -97,7 +97,7 @@ abstract class Parser implements IParser {
 
 		$this->currentObjectsTrace[] = $this->result;
 		$this->currentScope = $this->result;
-		
+
 		if ($skipParser) {
 			return;
 		}
@@ -106,21 +106,32 @@ abstract class Parser implements IParser {
 		\xml_parser_set_option($this->parser, \XML_OPTION_CASE_FOLDING, true);
 		\xml_parser_set_option($this->parser, \XML_OPTION_TARGET_ENCODING, "UTF-8");
 		\xml_set_element_handler(
-			$this->parser,
-			function($parser, string $name, array $attributes) : void {
+			parser: $this->parser,
+			start_handler: function(\XMLParser $parser, string $name, array $attributes) : void {
 				$this->startTagHandler($parser, $name, $attributes);
 			},
-			function($parser, string $name) : void {
+			end_handler: function(\XMLParser $parser, string $name) : void {
 				$this->endTagHandler($parser, $name);
 			}
 		);
 
 		\xml_set_character_data_handler(
-			$this->parser,
-			function($parser, string $data) : void {
+			parser: $this->parser,
+			handler: function(\XMLParser $parser, string $data) : void {
 				$this->dataHandler($parser, $data);
 			}
 		);
+	}
+
+	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : IParser {
+		if ($caseSensitiveNodeName !== null) {
+			$this->caseSensitiveNodeName = $caseSensitiveNodeName;
+		}
+		if ($caseSensitiveAttributes !== null) {
+			$this->caseSensitiveAttributes = $caseSensitiveAttributes;
+		}
+
+		return $this;
 	}
 
 	public function parse(string $data) : bool {
@@ -153,18 +164,14 @@ abstract class Parser implements IParser {
 	}
 
 	public function clean() : void {
-		if ($this->parser !== null) {
-			\xml_parser_free($this->parser);
-		}
-
 		$this->parser = null;
 		$this->depth = -1;
 		$this->result = null;
-		$this->currentElementsNameTrace = array();
-		$this->currentObjectsTrace = array();
+		$this->currentElementsNameTrace = [];
+		$this->currentObjectsTrace = [];
 		$this->currentScope = null;
 		$this->latestDataElementReference = null;
-		$this->errors = array();
+		$this->errors = [];
 		$this->errorsExists = false;
 	}
 
@@ -192,9 +199,12 @@ abstract class Parser implements IParser {
 	}
 
 	public function onFinalizeNode(string $name, callable $callback) : IParser {
-		$name = \strtoupper($name);
+		if ($this->caseSensitiveNodeName === true) {
+			$name = \strtoupper($name);
+		}
+
 		if (!isset($this->onFinalizeNode[$name])) {
-			$this->onFinalizeNode[$name] = array();
+			$this->onFinalizeNode[$name] = [];
 		}
 
 		$this->onFinalizeNode[$name][] = $callback;
@@ -231,7 +241,7 @@ abstract class Parser implements IParser {
 		$this->currentObjectsTrace[] = $obj;
 		$this->currentScope = $obj;
 	}
-	
+
 	private function getCurrentScope() : INode {
 		if ($this->currentScope !== null) {
 			return $this->currentScope;
@@ -251,7 +261,7 @@ abstract class Parser implements IParser {
 
 		return $obj;
 	}
-	
+
 	private function determinateAndCreateNode(INode $scope, string $name, array $attributes) : ?INode {
 		$result = $this->performExpectedObject($scope, $name, $attributes);
 
@@ -263,19 +273,19 @@ abstract class Parser implements IParser {
 	}
 
 	private function performExpectedObject(INode $scope, string $name, array $attributes) : ?INode {
-		$expected = $scope->getExpected();
-		if (!\array_key_exists($name, $expected)) {
+		$expects = $scope->getExpectedElements();
+		if (!\array_key_exists($name, $expects)) {
 			return null;
 		}
 
-		if (!$expected[$name]->usePrototype) {
+		if (!$expects[$name]->isPrototype()) {
 			return null;
 		}
 
-		if (\is_string($expected[$name]->prototypeName)) {
-			$obj = $this->getExpectedObjectByName($expected[$name]->prototypeName);
-		} else if ($expected[$name]->prototypeClass instanceof \ReflectionClass) {
-			$obj = $this->getExpectedObjectByClass($expected[$name]->prototypeClass);
+		if ($expects[$name]->getPrototypeClass() !== null) {
+			$obj = $this->getExpectedObjectByClass($expects[$name]->getPrototypeClass());
+		} else if ($expects[$name]->getPrototypeName() !== null) {
+			$obj = $this->getExpectedObjectByName($expects[$name]->getPrototypeName());
 		} else {
 				return null;
 		}
@@ -287,7 +297,7 @@ abstract class Parser implements IParser {
 			}
 		}
 
-		$obj->setName($name, false);
+		$obj->setName($name);
 		$obj->setAttributes($attributes);
 		$obj->setParentNode($scope);
 		$obj->setIgnoreChildrenIfNotExists($ignoreChildren);
@@ -350,7 +360,7 @@ abstract class Parser implements IParser {
 			}
 		}
 
-		$obj->setName($name, false);
+		$obj->setName($name);
 		$obj->setAttributes($attributes);
 		$obj->setParentNode($scope);
 		$obj->setIgnoreChildrenIfNotExists($ignoreChildren);
@@ -368,14 +378,14 @@ abstract class Parser implements IParser {
 		$className = \implode("_", $path);
 		return $this->prepareClassNameString($className);
 	}
-	
+
 	private function prepareClassNameString(string $className) : string {
 		$className = \str_replace(":", "_", $className);//TODO: Documentation
 		$className = \str_replace("-", "_", $className);//TODO: Documentation
 		return $className;
 	}
 
-	private function endTagHandler($parser, string $name) : void {
+	private function endTagHandler(\XMLParser $parser, string $name) : void {
 		$this->closeDataElement();
 		$this->closeNode();
 
@@ -395,7 +405,7 @@ abstract class Parser implements IParser {
 
 		$this->latestDataElementReference = null;
 	}
-	
+
 	public function finalizeNode() : void {
 		$this->closeNode();
 	}
@@ -413,7 +423,7 @@ abstract class Parser implements IParser {
 				$callback($scope);
 			}
 		}
-		
+
 		if ($remove) {
 			$scope->remove();
 		}
@@ -423,7 +433,7 @@ abstract class Parser implements IParser {
 		$this->dataHandler(null, $value);
 	}
 
-	private function dataHandler($parser, string $value) : void {
+	private function dataHandler(?\XMLParser $parser, string $value) : void {
 		if (\trim($value) === "") {
 			return;
 		}
@@ -453,12 +463,12 @@ abstract class Parser implements IParser {
 			return false;
 		}
 
-		$expected = $scope->parentNode->getExpected();
-		if (!\array_key_exists($name, $expected)) {
+		$expects = $scope->parentNode->getExpectedElements();
+		if (!\array_key_exists($name, $expects)) {
 			return false;
 		}
 
-		if ($expected[$name]->usePrototype) {
+		if ($expects[$name]->isPrototype()) {
 			return false;
 		}
 

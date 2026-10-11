@@ -23,7 +23,7 @@ use ArturasKaukenas\DOM;
 final class HTMLHeadElement extends HTMLElement {
 	public function __construct() {
 		$this->expects(
-			(new DOM\Expected("title", DOM\NodeDataTypes::T_STRING))->
+			(new DOM\Expected\Element("title", DOM\NodeDataTypes::T_STRING))->
 				process(
 					function ($value) {
 						$this->parentNode->TITLE = $value;

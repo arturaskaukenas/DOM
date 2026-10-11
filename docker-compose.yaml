@@ -3,9 +3,36 @@ services:
     build:
       context: .
       target: base
+      args:
+        PHP_VERSION: "8.4"
     command: bash -c "cd /var/target-lib && composer install && composer test"
     volumes:
       - ./composer.json:/var/target-lib/composer.json
+      - ./phpunit.xml:/var/target-lib/phpunit.xml
+      - ./src:/var/target-lib/src
+      - ./tests:/var/target-lib/tests
+   test-php84:
+    build:
+      context: .
+      target: base
+      args:
+        PHP_VERSION: "8.4"
+    command: bash -c "cd /var/target-lib && composer install && composer test"
+    volumes:
+      - ./composer.json:/var/target-lib/composer.json
+      - ./phpunit.xml:/var/target-lib/phpunit.xml
+      - ./src:/var/target-lib/src
+      - ./tests:/var/target-lib/tests
+   test-php85:
+    build:
+      context: .
+      target: base
+      args:
+        PHP_VERSION: "8.5"
+    command: bash -c "cd /var/target-lib && composer install && composer test"
+    volumes:
+      - ./composer.json:/var/target-lib/composer.json
+      - ./phpunit.xml:/var/target-lib/phpunit.xml
       - ./src:/var/target-lib/src
       - ./tests:/var/target-lib/tests
    generate-docs:

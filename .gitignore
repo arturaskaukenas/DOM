@@ -1,2 +1,4 @@
 vendor
 composer.lock
+Tasks
+.phpunit.result.cache

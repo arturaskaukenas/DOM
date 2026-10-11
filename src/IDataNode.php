@@ -19,6 +19,6 @@ limitations under the License.
 
 namespace ArturasKaukenas\DOM;
 
-interface IDataNode {
+interface IDataNode extends INodeBasic {
 	public function appendData(string $data) : void;
 }

@@ -1,9 +1,8 @@
 {
 	"name": "arturaskaukenas/dom",
-	"description": "PHP XML and HTML Parser",
-	"version": "1.0.1",
+	"description": "XML/HTML document object model for PHP — build, traverse, transform and stream-parse documents",
 	"type": "library",
-	"keywords": ["DOM","XML","HTML", "Object"],
+	"keywords": ["dom", "xml", "html", "document", "parser", "streaming", "serialization", "data-binding"],
 	"license": "Apache-2.0",
 	"authors": [
 		{
@@ -12,23 +11,35 @@
 		}
 	],
 	"require": {
-		"php": ">=7.3",
+		"php": ">=8.4 <8.6",
 		"ext-xml": "*"
 	},
 	"require-dev": {
-		"arturaskaukenas/simpletest": "1.0.0"
+		"phpunit/phpunit": "^13.4"
 	},
     "suggest": {
 		"ext-tidy": "HTML support"
 	},
 	"autoload": {
-		"classmap": [
-			"src/"
-		]
+		"psr-4": {
+			"ArturasKaukenas\\DOM\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"ArturasKaukenas\\tests\\": "tests/"
+		}
 	},
 	"prefer-stable": true,
 	"scripts":{
-		"test": "php tests/all.php",
-		"generate-docs": "doxygen Doxyfile"
+		"test": "phpunit",
+		"test_container": "docker compose run --build --rm test",
+		"test_container:8.4": "docker compose run --build --rm test-php84",
+		"test_container:8.5": "docker compose run --build --rm test-php85",
+		"test_container_all": [
+			"@test_container:8.4",
+			"@test_container:8.5"
+		],
+		"generate-docs": "docker compose run --build --rm generate-docs"
 	}
 }

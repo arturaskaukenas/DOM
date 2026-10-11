@@ -20,15 +20,14 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 trait NodeActions {
-	private $childIterator = 0;
+	private int $childIterator = 0;
 
 	public function hasAttributes() : bool {
 		return (\count($this->attributes) > 0);
 	}
 
 	public function hasAttribute(string $name) : bool {
-		$name = \strtolower($name);
-		return isset($this->attributes[$name]);
+		return isset($this->attributes[$this->prepareAttributeName($name)]);
 	}
 
 	public function getAttributeNames() : array {
@@ -36,7 +35,7 @@ trait NodeActions {
 	}
 
 	public function getAttribute(string $name) : ?string {
-		$name = \strtolower($name);
+		$name = $this->prepareAttributeName($name);
 		if (isset($this->attributes[$name])) {
 			return (string) $this->attributes[$name];
 		}
@@ -44,7 +43,8 @@ trait NodeActions {
 		return null;
 	}
 
-	public function setAttribute(string $name, $value) : void {
+	public function setAttribute(string $name, mixed $value) : void {
+		$name = $this->prepareAttributeName($name);
 		$valueT = (string) $value;
 
 		if ($value === null) {
@@ -78,7 +78,7 @@ trait NodeActions {
 	}
 
 	public function removeAttribute(string $name) : void {
-		$name = \strtolower($name);
+		$name = $this->prepareAttributeName($name);
 		if (!isset($this->attributes[$name])) {
 			return;
 		}
@@ -99,7 +99,7 @@ trait NodeActions {
 	}
 
 	public function nextChild() : ?INode {
-		if ($this->childIterator > $this->childElementCount) {
+		if ($this->childIterator > $this->childElementsQty) {
 			return null;
 		}
 
@@ -109,7 +109,7 @@ trait NodeActions {
 
 	public function iterateChild() : ?INode {
 		$child = $this->currentChild();
-		if ($this->childIterator <= $this->childElementCount) {
+		if ($this->childIterator <= $this->childElementsQty) {
 			$this->childIterator++;
 		}
 
@@ -117,7 +117,7 @@ trait NodeActions {
 	}
 
 	public function endChild() : ?INode {
-		return $this->getChild($this->childElementCount - 1);
+		return $this->getChild($this->childElementsQty - 1);
 	}
 
 	public function resetChild() : ?INode {
@@ -130,25 +130,25 @@ trait NodeActions {
 			$tagName = \trim(\strtoupper($tagName));
 		}
 
-		$result = array();
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		$result = [];
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			if ($this->children[$i]->nodeName === $tagName) {
 				$result[] = $this->children[$i];
 			}
 
 			$result = \array_merge($result, $this->children[$i]->getElementsByTagName($tagName, false));
 		}
-		
+
 		return $result;
 	}
 
 	public function getElementById(string $id) : ?INode {
-		$result = array();
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		$result = [];
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			if ($this->children[$i]->getAttribute("id") === $id) {
 				return $this->children[$i];
 			}
-			
+
 			$tmp_el = $this->children[$i]->getElementById($id);
 			if ($tmp_el !== null) {
 				return $tmp_el;
@@ -160,7 +160,7 @@ trait NodeActions {
 
 	public function getTextContents() : string {
 		$result = (string) $this->data;
-		for ($i = 0; $i < $this->childElementCount; $i++) {
+		for ($i = 0; $i < $this->childElementsQty; $i++) {
 			$result = $result.$this->children[$i]->getTextContents();
 		}
 
@@ -175,7 +175,7 @@ trait NodeActions {
 		$this->parser->init($this, true);
 		$this->parser->setData($data);
 		$this->parser->finalizeNode();
-		$this->parser->clean();		
+		$this->parser->clean();
 	}
 
 	public function getInner() : string {
@@ -185,5 +185,13 @@ trait NodeActions {
 
 	public function setInner(?string $data) : void {
 		throw new \Exception("Not implemented");
+	}
+
+	private function prepareAttributeName(string $name) : string {
+		if ($this->caseSensitiveAttributes) {
+			return $name;
+		}
+
+		return \strtolower($name);
 	}
 }
