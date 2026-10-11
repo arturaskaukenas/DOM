@@ -27,7 +27,7 @@ trait NodeActions {
 	}
 
 	public function hasAttribute(string $name) : bool {
-		return isset($this->attributes[$this->prepareAttributeName($name)]);
+		return isset($this->attributes[$this->prepareName($name)]);
 	}
 
 	public function getAttributeNames() : array {
@@ -35,7 +35,7 @@ trait NodeActions {
 	}
 
 	public function getAttribute(string $name) : ?string {
-		$name = $this->prepareAttributeName($name);
+		$name = $this->prepareName($name);
 		if (isset($this->attributes[$name])) {
 			return (string) $this->attributes[$name];
 		}
@@ -44,7 +44,7 @@ trait NodeActions {
 	}
 
 	public function setAttribute(string $name, mixed $value) : void {
-		$name = $this->prepareAttributeName($name);
+		$name = $this->prepareName($name);
 		$valueT = (string) $value;
 
 		if ($value === null) {
@@ -78,7 +78,7 @@ trait NodeActions {
 	}
 
 	public function removeAttribute(string $name) : void {
-		$name = $this->prepareAttributeName($name);
+		$name = $this->prepareName($name);
 		if (!isset($this->attributes[$name])) {
 			return;
 		}
@@ -125,9 +125,10 @@ trait NodeActions {
 		return $this->currentChild();
 	}
 
-	public function getElementsByTagName(string $tagName, bool $clean = true) : array {
-		if ($clean) {
-			$tagName = \trim(\strtoupper($tagName));
+	public function getElementsByTagName(string $tagName) : array {
+		$tagName = \trim($tagName);
+		if (!$this->caseSensitive) {
+			$tagName = \strtoupper($tagName);
 		}
 
 		$result = [];
@@ -136,7 +137,7 @@ trait NodeActions {
 				$result[] = $this->children[$i];
 			}
 
-			$result = \array_merge($result, $this->children[$i]->getElementsByTagName($tagName, false));
+			$result = \array_merge($result, $this->children[$i]->getElementsByTagName($tagName));
 		}
 
 		return $result;
@@ -145,7 +146,7 @@ trait NodeActions {
 	public function getElementById(string $id) : ?INode {
 		$result = [];
 		for ($i = 0; $i < $this->childElementsQty; $i++) {
-			if ($this->children[$i]->getAttribute("id") === $id) {
+			if ($this->children[$i]->nodeId === $id) {
 				return $this->children[$i];
 			}
 
@@ -187,11 +188,11 @@ trait NodeActions {
 		throw new \Exception("Not implemented");
 	}
 
-	private function prepareAttributeName(string $name) : string {
-		if ($this->caseSensitiveAttributes) {
+	private function prepareName(string $name) : string {
+		if ($this->caseSensitive) {
 			return $name;
 		}
 
-		return \strtolower($name);
+		return \strtoupper($name);
 	}
 }

@@ -13,7 +13,7 @@
             "name": "Run tests",
             "type": "php",
             "request": "launch",
-            "program": "${workspaceFolder}/tests/all.php",
+            "program": "${workspaceFolder}/vendor/bin/phpunit",
             "cwd": "${workspaceFolder}",
             "port": 0
         },

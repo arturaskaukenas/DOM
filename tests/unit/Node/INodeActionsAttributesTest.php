@@ -25,9 +25,6 @@ use ArturasKaukenas\DOM\INode;
 use ArturasKaukenas\DOM\XML\Parser;
 use ArturasKaukenas\tests\TestCase;
 
-/**
- * Ported from simple_tests/XML/3.php ("3. INode attributes").
- */
 final class INodeActionsAttributesTest extends TestCase {
 	private INode $node;
 
@@ -49,21 +46,21 @@ final class INodeActionsAttributesTest extends TestCase {
 	#[TestDox("hasAttribute")]
 	public function hasAttribute() : void {
 		$this->assertTrue($this->node->hasAttribute("testAttribute"));
-		$this->assertTrue($this->node->hasAttribute("testattribute"));
+		$this->assertFalse($this->node->hasAttribute("testattribute"));
 		$this->assertFalse($this->node->hasAttribute("wrongAttribute"));
 	}
 
 	#[Test]
 	#[TestDox("getAttributeNames")]
 	public function getAttributeNames() : void {
-		$this->assertSame(\strtolower("testAttribute"), $this->node->getAttributeNames()[1]);
+		$this->assertSame("testAttribute", $this->node->getAttributeNames()[1]);
 		$this->assertArrayNotHasKey(1, $this->node->getChild(0)->getAttributeNames());
 	}
 
 	#[Test]
 	#[TestDox("getAttribute")]
 	public function getAttribute() : void {
-		$this->assertSame("test", $this->node->getAttribute("testattribute"));
+		$this->assertSame("test", $this->node->getAttribute("testAttribute"));
 		$this->assertNull($this->node->getAttribute("wrongAttribute"));
 	}
 

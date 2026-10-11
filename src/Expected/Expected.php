@@ -42,7 +42,22 @@ abstract class Expected implements IExpected {
 
 	private ?bool $_isArray = null;
 
+	public const array RESERVED_NAMES = [
+		"nodeId" => true,
+		"nodeName" => true,
+		"parentNode" => true,
+		"childElementsQty" => true,
+		"dataAsChildren" => true,
+		"ignoreChildren" => true,
+		"cleanOnFinalize" => true,
+		"caseSensitive" => true
+	];
+
 	public function __construct(string $name, NodeDataTypes $type = NodeDataTypes::T_MIXED) {
+		if (isset(self::RESERVED_NAMES[$name])) {
+			throw new \Exception("Reserved name: ".$name);
+		}
+
 		$this->name = $name;
 		$this->type = $type;
 	}

@@ -26,9 +26,10 @@ use ArturasKaukenas\DOM;
  * DOM\Node::expects()/setExpectedValue() processing, validation and casting.
  */
 class Book extends DOM\XML\Node {
-	const NODE_NAME = "BOOK";
+	public const string NODE_NAME = "book";
 
-	public function __construct() {
+	public function __construct(bool $caseSensitive = true, bool $default = true) {
+		parent::__construct($caseSensitive);
 		$this->
 			setExpectedValue("id", DOM\NodeDataTypes::T_INT)->
 			expects(

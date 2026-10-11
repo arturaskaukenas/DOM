@@ -22,6 +22,10 @@ namespace ArturasKaukenas\DOM;
 class RootNode extends Node {
 	public const string NODE_NAME = "RootNode";
 
+	public function __construct(?bool $caseSensitive, bool $default = true) {
+		parent::__construct($caseSensitive, $default);
+	}
+
 	public function get(int $num = 0) : ?INode {
 		if ((\count($this->children)) === 0) {
 			return null;

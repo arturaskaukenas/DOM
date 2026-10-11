@@ -25,8 +25,9 @@ use ArturasKaukenas\DOM;
  * Parses HTML data into a DOM structure.
  */
 class Parser extends DOM\Parser {
-	protected bool $caseSensitiveNodeName = false;
-	protected bool $caseSensitiveAttributes = false;
+	public function __construct(bool $caseSensitive = false) {
+		parent::__construct($caseSensitive, $caseSensitive);
+	}
 
 	/**
      * Converts HTML data into well-formed XHTML using Tidy.
@@ -80,15 +81,14 @@ class Parser extends DOM\Parser {
 	}
 
 	protected function newRootNode() : DOM\INode {
-		return new Document;
+		return new Document($this->caseSensitive);
 	}
 
 	protected function newStdNode() : DOM\INode {
-		return new HTMLElement()->
-			setCaseSensitive($this->caseSensitiveNodeName, $this->caseSensitiveAttributes);
+		return new HTMLElement(($this->caseSensitive));
 	}
 
 	protected function newDataNode() : DOM\INode {
-		return new DataNode;
+		return new DataNode($this->caseSensitive);
 	}
 }

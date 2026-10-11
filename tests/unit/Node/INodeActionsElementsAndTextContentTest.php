@@ -25,9 +25,6 @@ use ArturasKaukenas\DOM;
 use ArturasKaukenas\DOM\XML\Parser;
 use ArturasKaukenas\tests\TestCase;
 
-/**
- * Ported from simple_tests/XML/5.php ("5. INode get elements and set text contents").
- */
 final class INodeActionsElementsAndTextContentTest extends TestCase {
 	private DOM\INode $fullResult;
 	private DOM\INode $result;
@@ -55,7 +52,7 @@ final class INodeActionsElementsAndTextContentTest extends TestCase {
 	#[TestDox("getElementsByTagName")]
 	public function getElementsByTagName() : void {
 		$this->assertCount(3, $this->result->getElementsByTagName("publish_date"));
-		$this->assertCount(3, $this->result->getElementsByTagName("pubLish_date "));
+		$this->assertCount(0, $this->result->getElementsByTagName("pubLish_date "));
 		$this->assertCount(0, $this->result->getElementsByTagName("wrong-tag"));
 		$this->assertSame(2, (int) $this->fullResult->getElementsByTagName("id")[1]->getTextContents());
 		$this->assertSame(2, (int) $this->result->getElementsByTagName("id")[1]->getTextContents());

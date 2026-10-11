@@ -24,6 +24,8 @@ class DataNode extends Node implements IDataNode {
 
 	public bool $dataAsChildren = false;
 
+	public bool $caseSensitive = true;
+
 	public function getExpected() : array {
 		return [];
 	}

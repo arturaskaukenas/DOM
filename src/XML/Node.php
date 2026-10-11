@@ -22,9 +22,11 @@ namespace ArturasKaukenas\DOM\XML;
 use ArturasKaukenas\DOM;
 
 abstract class Node extends DOM\Node implements INode {
-	public bool $caseSensitiveAttributes = true;
-	public bool $caseSensitiveNodeName = true;
 	public bool $dataAsChildren = true;
+
+	public function __construct(bool $caseSensitive = true) {
+		parent::__construct($caseSensitive);
+	}
 
 	public function getInner() : string {
 		return $this->getInnerXML();

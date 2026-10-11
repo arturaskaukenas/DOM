@@ -31,7 +31,7 @@ class Element extends Expected {
 	protected ?\ReflectionClass $prototypeClass = null;
 
 	public function __construct(string $name, NodeDataTypes $type = NodeDataTypes::T_MIXED) {
-		$name = \strtoupper($name);
+		//TODO: check for case sensitivity of the name
 		parent::__construct($name, $type);
 	}
 

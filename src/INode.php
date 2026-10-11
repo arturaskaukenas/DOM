@@ -20,12 +20,6 @@ limitations under the License.
 namespace ArturasKaukenas\DOM;
 
 interface INode extends INodeBasic, INodeActions {
-	/** The name of the node. */
-	public ?string $nodeName { get; }
-
-	/** The parent node. */
-	public ?INode $parentNode { get; }
-
 	/** The number of child elements. */
 	public int $childElementsQty { get; }
 
@@ -39,19 +33,16 @@ interface INode extends INodeBasic, INodeActions {
 	public bool $cleanOnFinalize { get; set; }
 
 	/** Whether attribute names are case-sensitive (true for XML, false for HTML). */
-	public bool $caseSensitiveAttributes { get; }
+	public bool $caseSensitive { get; }
 
-	/** Whether tag names are case-sensitive (true for XML, false for HTML). */
-	public bool $caseSensitiveNodeName { get; }
+	/** The ID of the node. */
+	public ?string $nodeId { get; }
 
-	/**
-     * Sets whether node names and attribute names should be treated case-sensitively.
-     *
-     * @param ?bool $caseSensitiveNodeName Whether tag and node names are case-sensitive, null for default.
-     * @param ?bool $caseSensitiveAttributes Whether attribute names are case-sensitive, null for default.
-     * @return IParser The parser instance for method chaining.
-     */
-	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : INode;
+	/** The name of the node. */
+	public ?string $nodeName { get; }
+
+	/** The parent node. */
+	public ?INode $parentNode { get; }
 
 	/**
      * Sets the name of the node (nodeName).

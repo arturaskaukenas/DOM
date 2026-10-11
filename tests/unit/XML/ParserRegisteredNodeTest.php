@@ -33,22 +33,45 @@ final class ParserRegisteredNodeTest extends TestCase {
 	#[Test]
 	#[TestDox("Registered node, processors, validators")]
 	public function registeredBookNodeIsProcessedValidatedAndCast() : void {
-		$parser = new Parser();
-		$parser->setCaseSensitive(false, false)
-			->registerNode(new \ReflectionClass(Book::class))
+		$parser = new Parser(true);
+		$parser->registerNode(new \ReflectionClass(Book::class))
 			->onFinalizeNode(
-				"BOOK",
+				"book",
+				function (DOM\INode $node) : void {
+					$this->assertIsInt($node->id);
+
+					if ($node->id === 1) {
+						$this->assertSame(\strtoupper("Gambardella, Matthew"), $node->author);
+						$this->assertSame("XML Developer's Guide", $node->title);
+						$this->assertNull($node->price);
+						$this->assertSame("'price' validation failed: Should be cheaper than 10", $node->getErrors()[0]);
+					} else if ($node->id === 2) {
+							$this->assertSame(\strtoupper("Ralls, Kim"), $node->author);
+							$this->assertInstanceOf(\DateTime::class, $node->publish_date);
+					}
+				}
+			);
+		$parser->fullParse($this->fixture("XML".\DIRECTORY_SEPARATOR."books.xml"));
+	}
+
+	#[Test]
+	#[TestDox("Registered node, processors, validators (case insensitive)")]
+	public function registeredBookNodeIsProcessedValidatedAndCastCaseInsensitive() : void {
+		$parser = new Parser(false);
+		$parser->registerNode(new \ReflectionClass(Book::class))
+			->onFinalizeNode(
+				"book",
 				function (DOM\INode $node) : void {
 					$this->assertIsInt($node->ID);
 
-					if ($node->ID === 1) {
-						$this->assertSame(\strtoupper("Gambardella, Matthew"), $node->AUTHOR);
-						$this->assertSame("XML Developer's Guide", $node->TITLE);
-						$this->assertNull($node->PRICE);
+					if ($node->iD === 1) {
+						$this->assertSame(\strtoupper("Gambardella, Matthew"), $node->auTHor);
+						$this->assertSame("XML Developer's Guide", $node->title);
+						$this->assertNull($node->pRice);
 						$this->assertSame("'PRICE' validation failed: Should be cheaper than 10", $node->getErrors()[0]);
 					} else if ($node->ID === 2) {
-							$this->assertSame(\strtoupper("Ralls, Kim"), $node->AUTHOR);
-							$this->assertInstanceOf(\DateTime::class, $node->PUBLISH_DATE);
+							$this->assertSame(\strtoupper("Ralls, Kim"), $node->auTHor);
+							$this->assertInstanceOf(\DateTime::class, $node->publish_date);
 					}
 				}
 			);

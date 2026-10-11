@@ -21,4 +21,8 @@ namespace ArturasKaukenas\DOM;
 
 class StdNode extends Node {
 	public const string NODE_NAME = "StdNode";
+
+	public function __construct(?bool $caseSensitive, bool $default = true) {
+		parent::__construct($caseSensitive, $default);
+	}
 }

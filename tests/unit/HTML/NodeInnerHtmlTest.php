@@ -74,7 +74,7 @@ final class NodeInnerHtmlTest extends TestCase {
 	#[TestDox("getInnerHTML - basic")]
 	public function getInnerHtmlBasic() : void {
 		$HTML = <<<END
-<CONTAINER id="CONTAINER" test_attribute="&apos;&quot;"></CONTAINER>
+<CONTAINER ID="CONTAINER" TEST_ATTRIBUTE="&apos;&quot;"></CONTAINER>
 END;
 
 		$this->assertSame($HTML, $this->container->getInnerHTML());
@@ -87,7 +87,7 @@ END;
 		$this->container->setTextContents("<TAG data=\"data\"></TAG>");
 
 		$HTML = <<<END
-<CONTAINER id="CONTAINER">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER>
+<CONTAINER ID="CONTAINER">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER>
 END;
 
 		$this->assertSame($HTML, $this->container->getInnerHTML());
@@ -100,28 +100,28 @@ END;
 
 		// 1
 		$HTML = <<<END
-<CONTAINER-CHILD id="CONTAINER-CHILD" attribute="a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD>
+<CONTAINER-CHILD ID="CONTAINER-CHILD" ATTRIBUTE="a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD>
 END;
 		$this->container->setInnerHTML($HTML);
 		$HTML = <<<END
-<CONTAINER id="CONTAINER"><CONTAINER-CHILD id="CONTAINER-CHILD" attribute="a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD></CONTAINER>
+<CONTAINER ID="CONTAINER"><CONTAINER-CHILD ID="CONTAINER-CHILD" ATTRIBUTE="a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD></CONTAINER>
 END;
 		$this->assertSame($HTML, $this->container->getInnerHTML());
 
 		// 2
 		$HTML = <<<END
-<CONTAINER id="CONTAINER"></CONTAINER>
+<CONTAINER ID="CONTAINER"></CONTAINER>
 END;
 		$this->document->getElementById("CONTAINER-CHILD")->remove();
 		$this->assertSame($HTML, $this->container->getInnerHTML());
 
 		// 3
 		$HTML = <<<END
-<CONTAINER-CHILD id="CONTAINER-CHILD" attribute="'&quot;a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD>
+<CONTAINER-CHILD ID="CONTAINER-CHILD" ATTRIBUTE="'&quot;a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD>
 END;
 		$this->container->setInnerHTML($HTML);
 		$HTML = <<<END
-<CONTAINER id="CONTAINER"><CONTAINER-CHILD id="CONTAINER-CHILD" attribute="&apos;&quot;a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD></CONTAINER>
+<CONTAINER ID="CONTAINER"><CONTAINER-CHILD ID="CONTAINER-CHILD" ATTRIBUTE="&apos;&quot;a">&lt;TAG data=&quot;data&quot;&gt;&lt;/TAG&gt;</CONTAINER-CHILD></CONTAINER>
 END;
 		$this->assertSame($HTML, $this->container->getInnerHTML());
 	}

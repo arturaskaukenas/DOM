@@ -22,7 +22,7 @@ namespace ArturasKaukenas\DOM\HTML;
 use ArturasKaukenas\DOM;
 
 final class DataNode extends Node implements DOM\IDataNode {
-	public const NODE_NAME = "DataNode";
+	public const string NODE_NAME = "DataNode";
 
 	public bool $dataAsChildren = false;
 

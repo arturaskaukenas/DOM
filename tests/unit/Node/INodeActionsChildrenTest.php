@@ -26,9 +26,6 @@ use ArturasKaukenas\DOM\XML\Parser;
 use ArturasKaukenas\DOM\XML\StdNode;
 use ArturasKaukenas\tests\TestCase;
 
-/**
- * Ported from simple_tests/XML/4.php ("4. INode children").
- */
 final class INodeActionsChildrenTest extends TestCase {
 	private INode $result;
 
@@ -119,7 +116,7 @@ final class INodeActionsChildrenTest extends TestCase {
 		$this->assertSame("TEST_NODE_2", $this->result->endChild()->nodeName);
 
 		$this->result->removeChild($this->result->endChild());
-		$this->assertSame("BOOK", $this->result->endChild()->nodeName);
+		$this->assertSame("book", $this->result->endChild()->nodeName);
 	}
 
 	#[Test]
@@ -148,12 +145,11 @@ final class INodeActionsChildrenTest extends TestCase {
 
 		$testNode = new StdNode;
 		$testNode->setName("test");
-		$this->assertSame("TEST", $testNode->nodeName);
+		$this->assertSame("test", $testNode->nodeName);
 	}
 
 	/**
      * Replays part 4.7 (appendChild) so a later part can exercise removeChild()
-     * against the exact TEST_NODE_1/TEST_NODE_2 pair the legacy script built.
      *
      * @return 	array{0: StdNode, 1: StdNode}
      */

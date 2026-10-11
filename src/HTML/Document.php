@@ -22,7 +22,8 @@ namespace ArturasKaukenas\DOM\HTML;
 use \ArturasKaukenas\DOM;
 
 final class Document extends Node {
-	public function __construct() {
+	public function __construct(bool $caseSensitive = false) {
+		parent::__construct($caseSensitive);
 		$this->
 			setExpectedObject("html", new \ReflectionClass(Document::class), false)->//fix <html> tag
 			setExpectedObject("head", new \ReflectionClass(HTMLHeadElement::class), false)->

@@ -21,7 +21,9 @@ namespace ArturasKaukenas\DOM\HTML;
 use ArturasKaukenas\DOM;
 
 final class HTMLHeadElement extends HTMLElement {
-	public function __construct() {
+	public function __construct(bool $caseSensitive = false) {
+		parent::__construct($caseSensitive);
+
 		$this->expects(
 			(new DOM\Expected\Element("title", DOM\NodeDataTypes::T_STRING))->
 				process(

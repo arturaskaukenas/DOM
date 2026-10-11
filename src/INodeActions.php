@@ -88,7 +88,7 @@ interface INodeActions {
 								for example, it starts with a number, a hyphen, or a period, or contains characters other than alphanumeric characters, underscores, hyphens, or periods..
      */
 	public function removeAttribute(string $name) : void;
-	
+
 	/**
      * Retrieves the child node at the specified index.
      *
@@ -135,16 +135,15 @@ interface INodeActions {
 	/**
      * Retrieves a collection of elements with the specified tag name.
      *
-     * @param string $tagName	A string representing the name of the elements.
-     * @param bool $clean		Automatically trim and uppercase provided tag name.
-     * @return array			An array of found elements in the order they appear in the tree.
+     * @param string $tagName		A string representing the name of the elements.
+     * @return Inode[]			An array of found elements in the order they appear in the tree.
      */
-	public function getElementsByTagName(string $tagName, bool $clean = true) : array;
+	public function getElementsByTagName(string $tagName) : array;
 
 	/**
      * Retrieves an element by its 'id' attribute.
      *
-     * @param string $id		The value of the ID attribute to search for.
+     * @param string $id			The value of the ID attribute to search for.
      * @return ?INode			The element with the specified ID, or null if no such element exists.
      */
 	public function getElementById(string $id) : ?INode;

@@ -26,7 +26,11 @@ use ArturasKaukenas\DOM\HTML;
  * IParser::onFinalizeNode() and content stored as node data rather than children.
  */
 class Script extends HTML\HTMLElement {
-	const NODE_NAME = "SCRIPT";
+	public const string NODE_NAME = "SCRIPT";
 
 	public bool $dataAsChildren = false;
+
+	public function __construct(bool $caseSensitive = true, bool $default = true) {
+		parent::__construct($caseSensitive);
+	}
 }

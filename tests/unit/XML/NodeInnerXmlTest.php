@@ -45,7 +45,7 @@ final class NodeInnerXmlTest extends TestCase {
 		$parser
 			->registerNode(new \ReflectionClass(Book::class))
 			->onFinalizeNode(
-				"BOOK",
+				"book",
 				function (DOM\INode $node) : void {
 					$this->tracker->tick = true;
 				}
@@ -68,7 +68,7 @@ final class NodeInnerXmlTest extends TestCase {
 	#[TestDox("getInnerXML - basic")]
 	public function getInnerXmlBasic() : void {
 		$XML = <<<END
-<CONTAINER id="CONTAINER" test_attribute="&apos;&quot;"></CONTAINER>
+<CONTAINER id="CONTAINER" Test_Attribute="&apos;&quot;"></CONTAINER>
 END;
 
 		$this->assertSame($XML, $this->container->getInnerXML());
@@ -77,7 +77,7 @@ END;
 	#[Test]
 	#[TestDox("getInnerXML - CDATA")]
 	public function getInnerXmlCdata() : void {
-		$this->container->removeAttribute("test_attribute");
+		$this->container->removeAttribute("Test_Attribute");
 		$this->container->setTextContents("<TAG data=\"data\"></TAG>");
 
 		$XML = <<<END
@@ -90,7 +90,7 @@ END;
 	#[Test]
 	#[TestDox("setInnerXML")]
 	public function setInnerXml() : void {
-		$this->container->removeAttribute("test_attribute");
+		$this->container->removeAttribute("Test_Attribute");
 
 		// 1
 		$XML = <<<END
@@ -134,8 +134,8 @@ END;
 	public function setInnerXmlTemplatedNodeValidateTriggered() : void {
 		$node = $this->dummyBookNode();
 
-		$this->assertNull($node->PRICE);
-		$this->assertSame("'PRICE' validation failed: Should be cheaper than 10", $node->getErrors()[0]);
+		$this->assertNull($node->price);
+		$this->assertSame("'price' validation failed: Should be cheaper than 10", $node->getErrors()[0]);
 	}
 
 	#[Test]
@@ -144,7 +144,7 @@ END;
 		$node = $this->dummyBookNode();
 
 		$node->getElementsByTagName("price")[0]->setTextContents("6");
-		$this->assertSame(6.0, $node->PRICE);
+		$this->assertSame(6.0, $node->price);
 	}
 
 	#[Test]
@@ -152,9 +152,9 @@ END;
 	public function setInnerXmlTemplatedNodeProcess() : void {
 		$node = $this->dummyBookNode();
 
-		$this->assertSame(\strtoupper("Surname, Name"), $node->AUTHOR);
+		$this->assertSame(\strtoupper("Surname, Name"), $node->author);
 		$node->getElementsByTagName("author")[0]->setTextContents("Dummy Author");
-		$this->assertSame(\strtoupper("Dummy Author"), $node->AUTHOR);
+		$this->assertSame(\strtoupper("Dummy Author"), $node->author);
 	}
 
 	private function dummyBookXML() : string {

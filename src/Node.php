@@ -25,7 +25,7 @@ namespace ArturasKaukenas\DOM;
 
 abstract class Node implements INode {
 	use NodeActions;
-
+	public private(set) ?string $nodeId = null;
 	public private(set) ?string $nodeName = null;
 	public private(set) ?INode $parentNode = null;
 	public private(set) int $childElementsQty = 0;
@@ -33,14 +33,16 @@ abstract class Node implements INode {
 	public bool $ignoreChildren = false;
 	public bool $cleanOnFinalize = false;
 
-	public bool $caseSensitiveAttributes = true;
-	public bool $caseSensitiveNodeName = true;
+	public private(set) bool $caseSensitive = true;
 
+	/** @var array<string, mixed> */
 	protected array $attributes = [];
 	protected ?string $data = null;
+
+	/** @var INode[] */
 	protected array $children = [];
 
-	/** @var callable */
+	/** @var ?callable */
 	protected $dataParser = null;
 
 	/** @var array<string, Expected\IExpected> */
@@ -62,15 +64,12 @@ abstract class Node implements INode {
 
 	protected ?IParser $parser = null;
 
-	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : INode {
-		if ($caseSensitiveNodeName !== null) {
-			$this->caseSensitiveNodeName = $caseSensitiveNodeName;
+	public function __construct(?bool $caseSensitive, bool $default = true) {
+		if ($caseSensitive !== null) {
+			$this->caseSensitive = $caseSensitive;
+		} else {
+				$this->caseSensitive = $default;
 		}
-		if ($caseSensitiveAttributes !== null) {
-			$this->caseSensitiveAttributes = $caseSensitiveAttributes;
-		}
-
-		return $this;
 	}
 
 	public function setParser(IParser $parser) : void {
@@ -103,7 +102,7 @@ abstract class Node implements INode {
 			$value = [];
 		}
 
-		$name = $expected->getName();
+		$name = $this->prepareName($expected->getName());
 
 		if (isset($this->expects[$name])) {
 			throw new \Exception("key '".$name."' already expected");
@@ -126,11 +125,11 @@ abstract class Node implements INode {
 	}
 
 	public function setExpectedObject(string $name, \ReflectionClass|string $object, bool $isArray = false) : INode {
+		$name = $this->prepareName($name);
 		$type = NodeDataTypes::T_PROTO;
 		if ($isArray) {
 			$type = NodeDataTypes::T_ARRAY_OF_PROTO;
 		}
-
 		$expected = new Expected\Element($name, $type);
 
 		if (\is_string($object)) {
@@ -145,6 +144,7 @@ abstract class Node implements INode {
 	}
 
 	public function setExpectedValue(string $name, NodeDataTypes $type = NodeDataTypes::T_MIXED, ?callable $processFunction = null) : INode {
+		$name = $this->prepareName($name);
 		$expected = new Expected\Element($name, $type);
 		if ($processFunction !== null) {
 			$expected->process($processFunction);
@@ -154,6 +154,7 @@ abstract class Node implements INode {
 	}
 
 	public function appendExpectedValue(string $name, string $value) : void {
+		$name = $this->prepareName($name);
 		if (!isset($this->expects[$name])) {
 			throw new \Exception("key '".$name."' not expected");
 		}
@@ -208,22 +209,27 @@ abstract class Node implements INode {
 	}
 
 	public function __get(string $name): mixed {
+		$name = $this->prepareName($name);
 		return $this->expectedValues[$name];
 	}
 
 	public function __set(string $name, $value) : void {
+		$name = $this->prepareName($name);
 		$this->expectedValues[$name] = $value;
 	}
 
 	public function __isset(string $name) : bool {
+		$name = $this->prepareName($name);
 		return $this->expectedElementExists($name);
 	}
 
 	public function expectedElementExists(string $name) : bool {
+		$name = $this->prepareName($name);
 		return \array_key_exists($name, $this->expectedValues);
 	}
 
 	public function setExpectedElement(string $name, $value) : void {
+		$name = $this->prepareName($name);
 		if (\is_array($this->expectedValues[$name])) {
 			$this->expectedValues[$name][] = $value;
 		}
@@ -232,7 +238,7 @@ abstract class Node implements INode {
 	}
 
 	private function cast(mixed $value, NodeDataTypes $type): mixed {
-		//TODO: add more types (T_ARRAY_OF_*)
+		//TODO: add more types (T_ARRAY_OF_*), also take into account https://www.w3.org/TR/xmlschema-2/#datatype
 		switch($type) {
 			case NodeDataTypes::T_STRING:
 				$value = (string) $value;
@@ -269,7 +275,7 @@ abstract class Node implements INode {
 
 	public function setName(string $name) : void {
 		$name = \trim($name);
-		if ($this->caseSensitiveNodeName) {
+		if (!$this->caseSensitive) {
 			$name = \strtoupper($name);
 		}
 
@@ -284,7 +290,14 @@ abstract class Node implements INode {
 		$expects = $this->getExpectedAttributes();
 
 		foreach ($attributes as $key => $value) {
-			$key = $this->prepareAttributeName($key);
+			if ($this->nodeId === null) {
+				if (($key === "id") || ($key === "ID") || ($key === "Id") || ($key === "iD")) {
+					//TODO: $this->setIdAttribute($value);
+					$this->nodeId = (string) $value;
+				}
+			}
+
+			$key = $this->prepareName($key);
 			$this->attributes[$key] = $value;
 
 			if (\array_key_exists($key, $expects)) {

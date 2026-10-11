@@ -32,7 +32,7 @@ abstract class Parser implements IParser {
 	/**
      * @var \XMLParser The XML parser resource.
      */
-	private \XMLParser $parser = null;
+	private ?\XMLParser $parser = null;
 
 	/**
      * @var int The depth of the current parsing context.
@@ -84,6 +84,16 @@ abstract class Parser implements IParser {
      */
 	private array $onFinalizeNode = [];
 
+	public private(set) bool $caseSensitive;
+
+	public function __construct(?bool $caseSensitive, bool $default = true) {
+		if ($caseSensitive !== null) {
+			$this->caseSensitive = $caseSensitive;
+		} else {
+				$this->caseSensitive = $default;
+		}
+	}
+
 	public function init(?INode $currentScope = null, bool $skipParser = false) : void {
 		if ($this->parser !== null) {
 			$this->clean();
@@ -103,7 +113,7 @@ abstract class Parser implements IParser {
 		}
 
 		$this->parser = \xml_parser_create();
-		\xml_parser_set_option($this->parser, \XML_OPTION_CASE_FOLDING, true);
+		\xml_parser_set_option($this->parser, \XML_OPTION_CASE_FOLDING, ((bool) $this->caseSensitive) === false);
 		\xml_parser_set_option($this->parser, \XML_OPTION_TARGET_ENCODING, "UTF-8");
 		\xml_set_element_handler(
 			parser: $this->parser,
@@ -121,17 +131,6 @@ abstract class Parser implements IParser {
 				$this->dataHandler($parser, $data);
 			}
 		);
-	}
-
-	public function setCaseSensitive(?bool $caseSensitiveNodeName = null, ?bool $caseSensitiveAttributes = null) : IParser {
-		if ($caseSensitiveNodeName !== null) {
-			$this->caseSensitiveNodeName = $caseSensitiveNodeName;
-		}
-		if ($caseSensitiveAttributes !== null) {
-			$this->caseSensitiveAttributes = $caseSensitiveAttributes;
-		}
-
-		return $this;
 	}
 
 	public function parse(string $data) : bool {
@@ -181,6 +180,8 @@ abstract class Parser implements IParser {
 			$name = $class->getShortName();
 		}
 
+		$name = $this->prepareName($name);
+
 		if ($this->isNodeRegistered($name)) {
 			return $this;
 		}
@@ -199,9 +200,7 @@ abstract class Parser implements IParser {
 	}
 
 	public function onFinalizeNode(string $name, callable $callback) : IParser {
-		if ($this->caseSensitiveNodeName === true) {
-			$name = \strtoupper($name);
-		}
+		$name = $this->prepareName($name);
 
 		if (!isset($this->onFinalizeNode[$name])) {
 			$this->onFinalizeNode[$name] = [];
@@ -213,19 +212,24 @@ abstract class Parser implements IParser {
 	}
 
 	protected function newRootNode() : INode {
-		return new RootNode;
+		return new RootNode($this->caseSensitive, $this->caseSensitive); //TODO: pass array of args (to use as props in similar to React)
 	}
 
 	protected function newStdNode() : INode {
-		return new StdNode;
+		return new StdNode($this->caseSensitive, $this->caseSensitive);  //TODO: pass array of args (to use as props in similar to React)
 	}
 
 	protected function newDataNode() : INode {
-		return new DataNode;
+		return new DataNode($this->caseSensitive, $this->caseSensitive); //TODO: pass array of args (to use as props in similar to React)
 	}
 
 	private function createNodeInstance(string $elementName) : INode {
-		return $this->registeredNodes[$elementName]->newInstanceArgs();
+		return $this->registeredNodes[$elementName]->newInstanceArgs(  //TODO: pass array of args (to use as props in similar to React)
+			[
+				"caseSensitive" => $this->caseSensitive,
+				"default" => $this->caseSensitive
+			]
+		);
 	}
 
 	private function startTagHandler($parser, string $name, array $attributes) : void {
@@ -486,5 +490,13 @@ abstract class Parser implements IParser {
 		}
 
 		$this->latestDataElementReference->appendData($data);
+	}
+
+	private function prepareName(string $name) : string {
+		if ($this->caseSensitive) {
+			return $name;
+		}
+
+		return \strtoupper($name);
 	}
 }

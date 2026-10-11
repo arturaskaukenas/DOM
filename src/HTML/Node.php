@@ -22,9 +22,11 @@ namespace ArturasKaukenas\DOM\HTML;
 use ArturasKaukenas\DOM;
 
 abstract class Node extends DOM\Node implements INode {
-	public bool $caseSensitiveAttributes = false;
-	public bool $caseSensitiveNodeName = false;
 	public bool $dataAsChildren = true;
+
+	public function __construct(bool $caseSensitive = false) {
+		parent::__construct($caseSensitive, $caseSensitive);
+	}
 
 	public function getInner() : string {
 		return $this->getInnerHTML();
